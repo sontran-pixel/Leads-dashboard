@@ -1,0 +1,34 @@
+{
+  "shopId": "quynhspa",
+  "shopName": "Quỳnh Spa",
+  "shopEmoji": "🌸",
+  "shopAddress": "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai",
+  "color": "#E8477A",
+  "colorLight": "#FDE8EF",
+  "colorDark": "#B8305A",
+  "slots": [
+    "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+    "13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"
+  ],
+  "blockedSlots": [],
+  "services": [
+    {
+      "name": "Gội Đầu Cơ Bản",
+      "duration": 20,
+      "price": 50000,
+      "icon": "💆"
+    },
+    {
+      "name": "Gội Đầu Thư Giãn",
+      "duration": 40,
+      "price": 79000,
+      "icon": "✨"
+    },
+    {
+      "name": "Gội Đầu Chuyên Sâu",
+      "duration": 60,
+      "price": 179000,
+      "icon": "👑"
+    }
+  ]
+}
