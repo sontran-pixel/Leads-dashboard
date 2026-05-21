@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookEasy – Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F0D1A;--bg:#F4F3FF;--card:#fff;
+  --purple:#7C6EF5;--pl:#EEEDFE;--pm:#534AB7;--pd:#3C3489;
+  --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
+  --red:#E5484D;--rl:#FFECEC;
+  --amber:#D4850A;--al:#FFF4DE;
+  --muted:#7B7599;--border:#E8E5FF;
+  --shadow:0 1px 4px rgba(124,110,245,.08),0 4px 16px rgba(124,110,245,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:220px;
+  background:var(--ink);z-index:50;display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo h1{font-size:18px;font-weight:600;color:#fff}
+.sb-logo h1 span{color:#A89FF7}
+.sb-logo p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.sb-nav{padding:12px 10px;flex:1}
+.sb-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.3);padding:0 10px;margin:12px 0 4px}
+.sb-item{
+  display:flex;align-items:center;gap:9px;padding:9px 10px;
+  border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.55);border:none;background:none;
+  width:100%;text-align:left;transition:all .15s;
+}
+.sb-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.sb-item.on{background:rgba(124,110,245,.25);color:#C5BEFF}
+.sb-item i{font-size:16px;flex-shrink:0}
+.sb-bottom{padding:14px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-admin{display:flex;align-items:center;gap:9px;padding:8px 10px}
+.sb-av{width:32px;height:32px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.sb-admin-name{font-size:13px;font-weight:500;color:rgba(255,255,255,.8)}
+.sb-admin-role{font-size:11px;color:rgba(255,255,255,.4)}
+
+/* ── MAIN ── */
+.main{margin-left:220px;min-height:100vh}
+.topbar{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:40;
+}
+.topbar-title{font-size:16px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'Be Vietnam Pro',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--purple);color:#fff}
+.btn-primary:hover{background:var(--pm)}
+.btn-ghost{background:var(--pl);color:var(--pm);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--border)}
+.btn-danger{background:var(--rl);color:var(--red);border:1px solid #F5AAAD}
+.btn-success{background:var(--tl);color:var(--td);border:1px solid #7ADCBE}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:6px}
+
+.page{display:none;padding:24px 28px}
+.page.on{display:block}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border-radius:14px;border:1px solid var(--border);
+  padding:18px 20px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;
+}
+.stat-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.stat-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:3px}
+.stat-val{font-size:24px;font-weight:600}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ── TABLE ── */
+.table-card{background:var(--card);border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.tc-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.tc-title{font-size:15px;font-weight:600}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;min-width:200px}
+.search-bar input{border:none;background:none;outline:none;font-size:13px;font-family:'Be Vietnam Pro',sans-serif;color:var(--ink);width:100%}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg);padding:10px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.shop-name{font-weight:500;font-size:14px}
+.shop-domain{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-active{background:var(--tl);color:var(--td)}
+.badge-inactive{background:var(--rl);color:var(--red)}
+.badge-trial{background:var(--al);color:var(--amber)}
+.badge-pro{background:var(--pl);color:var(--pm)}
+.badge-basic{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.plan-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-active{background:var(--teal)}
+.dot-inactive{background:var(--red)}
+.dot-trial{background:var(--amber)}
+.actions-cell{display:flex;align-items:center;gap:6px}
+
+/* ── MODAL ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(15,13,26,.5);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:20px;display:none;
+}
+.overlay.on{display:flex}
+.modal{
+  background:var(--card);border-radius:16px;padding:24px;
+  width:100%;max-width:480px;
+  box-shadow:0 20px 60px rgba(15,13,26,.2);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.field{margin-bottom:14px}
+.field label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field input,.field select{
+  width:100%;padding:10px 12px;border:1px solid var(--border);
+  border-radius:8px;font-size:14px;font-family:'Be Vietnam Pro',sans-serif;
+  background:var(--card);color:var(--ink);transition:border-color .15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--purple)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+
+/* ── LINK BOX ── */
+.link-box{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-top:6px;
+}
+.copy-link{background:var(--pl);color:var(--pm);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;white-space:nowrap}
+.copy-link.ok{background:var(--tl);color:var(--td)}
+
+/* ── REVENUE ── */
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.rev-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:20px;box-shadow:var(--shadow)}
+.rev-label{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.rev-val{font-size:28px;font-weight:600;color:var(--ink)}
+.rev-sub{font-size:12px;color:var(--teal);margin-top:4px;font-weight:500}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:16px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;background:var(--pl);border-radius:4px 4px 0 0;transition:all .3s;cursor:pointer}
+.bar:hover{background:var(--purple)}
+.bar-lbl{font-size:10px;color:var(--muted);white-space:nowrap}
+.bar-val{font-size:10px;font-weight:500;color:var(--pm)}
+
+/* ── EXPIRY WARNING ── */
+.expiry-row td{background:#FFFBF0 !important}
+.expiry-badge{background:var(--al);color:var(--amber);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--ink);color:#fff;
+  padding:12px 18px;border-radius:10px;
+  font-size:13px;font-weight:500;
+  z-index:999;transform:translateY(80px);opacity:0;
+  transition:all .3s;pointer-events:none;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{transform:none;opacity:1}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <h1>Book<span>Easy</span></h1>
+    <p>Admin Dashboard</p>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-label">Tổng quan</div>
+    <button class="sb-item on" onclick="goPage('p-overview',this)">
+      <i>📊</i> Tổng quan
+    </button>
+    <div class="sb-label">Quản lý</div>
+    <button class="sb-item" onclick="goPage('p-shops',this)">
+      <i>🏪</i> Cửa hàng
+    </button>
+    <button class="sb-item" onclick="goPage('p-billing',this)">
+      <i>💳</i> Thanh toán
+    </button>
+    <button class="sb-item" onclick="goPage('p-expiring',this)">
+      <i>⏰</i> Sắp hết hạn
+    </button>
+    <div class="sb-label">Hệ thống</div>
+    <button class="sb-item" onclick="goPage('p-logs',this)">
+      <i>📋</i> Activity log
+    </button>
+  </nav>
+  <div class="sb-bottom">
+    <div class="sb-admin">
+      <div class="sb-av">A</div>
+      <div>
+        <div class="sb-admin-name">Admin</div>
+        <div class="sb-admin-role">Owner · BookEasy</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Tổng quan</div>
+    <div class="topbar-right">
+      <button class="btn btn-primary" onclick="openModal()">+ Thêm shop mới</button>
+    </div>
+  </div>
+
+  <!-- ── OVERVIEW PAGE ── -->
+  <div class="page on" id="p-overview">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#EEEDFE">🏪</div>
+        <div>
+          <div class="stat-label">Tổng shop</div>
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-sub">đang quản lý</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#DFFAF0">✅</div>
+        <div>
+          <div class="stat-label">Đang hoạt động</div>
+          <div class="stat-val" id="stat-active" style="color:var(--teal)">0</div>
+          <div class="stat-sub">đã trả phí</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#FFF4DE">⏰</div>
+        <div>
+          <div class="stat-label">Sắp hết hạn</div>
+          <div class="stat-val" id="stat-expiring" style="color:var(--amber)">0</div>
+          <div class="stat-sub">trong 7 ngày</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#DFFAF0">💰</div>
+        <div>
+          <div class="stat-label">Doanh thu / tháng</div>
+          <div class="stat-val" id="stat-revenue" style="color:var(--teal)">0đ</div>
+          <div class="stat-sub">MRR hiện tại</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rev-grid">
+      <div class="rev-card">
+        <div class="rev-label">Doanh thu theo tháng</div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-label">Tỉ lệ gói dịch vụ</div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px" id="plan-breakdown"></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="tc-head">
+        <div class="tc-title">Shop hoạt động gần đây</div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Cửa hàng</th><th>Gói</th><th>Hết hạn</th><th>Trạng thái</th><th>Thao tác</th>
+        </tr></thead>
+        <tbody id="overview-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SHOPS PAGE ── -->
+  <div class="page" id="p-shops">
+    <div class="table-card">
+      <div class="tc-head">
+        <div class="tc-title">Tất cả cửa hàng <span id="shop-count" style="color:var(--muted);font-weight:400;font-size:13px"></span></div>
+        <div style="display:flex;gap:8px">
+          <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="Tìm tên, domain..." oninput="filterShops(this.value)" id="search-input">
+          </div>
+          <select class="btn btn-ghost" style="cursor:pointer" onchange="filterByStatus(this.value)">
+            <option value="">Tất cả</option>
+            <option value="active">Đang dùng</option>
+            <option value="trial">Dùng thử</option>
+            <option value="inactive">Đã khoá</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Cửa hàng</th><th>Link subdomain</th><th>Gói</th><th>Hết hạn</th><th>Trạng thái</th><th>Thao tác</th>
+        </tr></thead>
+        <tbody id="shops-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── BILLING PAGE ── -->
+  <div class="page" id="p-billing">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#DFFAF0">💰</div>
+        <div>
+          <div class="stat-label">MRR</div>
+          <div class="stat-val" id="b-mrr" style="color:var(--teal)">0</div>
+          <div class="stat-sub">monthly recurring</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#EEEDFE">📈</div>
+        <div>
+          <div class="stat-label">ARR (dự kiến)</div>
+          <div class="stat-val" id="b-arr">0</div>
+          <div class="stat-sub">× 12 tháng</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#FFF4DE">⏳</div>
+        <div>
+          <div class="stat-label">Cần gia hạn</div>
+          <div class="stat-val" id="b-renew" style="color:var(--amber)">0</div>
+          <div class="stat-sub">trong 30 ngày</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#FFECEC">❌</div>
+        <div>
+          <div class="stat-label">Đã khoá</div>
+          <div class="stat-val" id="b-locked" style="color:var(--red)">0</div>
+          <div class="stat-sub">chưa thanh toán</div>
+        </div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="tc-head"><div class="tc-title">Lịch sử gia hạn</div></div>
+      <table>
+        <thead><tr><th>Cửa hàng</th><th>Gói</th><th>Số tiền</th><th>Ngày</th><th>Hành động</th></tr></thead>
+        <tbody id="billing-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── EXPIRING PAGE ── -->
+  <div class="page" id="p-expiring">
+    <div style="background:var(--al);border:1px solid #EFC47E;border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#7A4F00">
+      ⚠️ <strong>Lưu ý:</strong> Các shop dưới đây sẽ tự động bị khoá sau ngày hết hạn. Nhắn tin nhắc khách gia hạn trước 3–5 ngày để không gián đoạn dịch vụ.
+    </div>
+    <div class="table-card">
+      <div class="tc-head"><div class="tc-title">Sắp hết hạn (30 ngày tới)</div></div>
+      <table>
+        <thead><tr><th>Cửa hàng</th><th>Gói</th><th>Hết hạn</th><th>Còn lại</th><th>Hành động</th></tr></thead>
+        <tbody id="expiring-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── LOGS PAGE ── -->
+  <div class="page" id="p-logs">
+    <div class="table-card">
+      <div class="tc-head"><div class="tc-title">Activity Log</div></div>
+      <table>
+        <thead><tr><th>Thời gian</th><th>Hành động</th><th>Cửa hàng</th><th>Chi tiết</th></tr></thead>
+        <tbody id="logs-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── ADD SHOP MODAL ── -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">🏪 <span id="modal-title-text">Thêm shop mới</span></div>
+    <div class="field">
+      <label>Tên cửa hàng</label>
+      <input id="f-name" type="text" placeholder="Spa Hoa Lan">
+    </div>
+    <div class="field">
+      <label>Slug (subdomain)</label>
+      <input id="f-slug" type="text" placeholder="spa-hoa-lan" oninput="previewLink()">
+      <div class="link-box" id="link-preview">
+        <span id="link-text" style="color:var(--muted)">spa-hoa-lan.bookeasy.vn</span>
+        <button class="copy-link" onclick="copyLink()">Copy link</button>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Gói dịch vụ</label>
+        <select id="f-plan">
+          <option value="trial">Dùng thử (30 ngày)</option>
+          <option value="basic">Cơ bản – 299k/th</option>
+          <option value="pro" selected>Chuyên nghiệp – 599k/th</option>
+          <option value="enterprise">Doanh nghiệp – 999k/th</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Hết hạn</label>
+        <input id="f-expires" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Màu thương hiệu</label>
+      <input id="f-color" type="color" value="#7C6EF5" style="height:40px;padding:4px 6px;cursor:pointer">
+    </div>
+    <div class="field">
+      <label>Số điện thoại chủ shop</label>
+      <input id="f-phone" type="text" placeholder="0901 234 567">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveShop()">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── API ─────────────────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycbxEQM2ND__mgHGnRvfsRm_DybcTo4zDO6lwhVQK6EtQB8AWDpwOffUvqtx55qklwOv-/exec';
+
+// ── PLANS ───────────────────────────────────────────────────
+const PLANS = {
+  trial:      { label:'Dùng thử', price:0,       color:'var(--al)',  tc:'var(--amber)' },
+  basic:      { label:'Cơ bản',   price:299000,   color:'var(--bg)',  tc:'var(--muted)' },
+  pro:        { label:'Pro',      price:599000,   color:'var(--pl)',  tc:'var(--pm)'    },
+  enterprise: { label:'Enterprise',price:999000,  color:'#E8F4FF',   tc:'#1565C0'      },
+};
+
+// ── SHOPS (quản lý thủ công bởi admin) ─────────────────────
+let shops = [
+  { id:1, name:'Spa Hoa Lan',      slug:'hoalan',     plan:'pro',   expires:'2026-08-01', status:'active', phone:'0901 111 222', color:'#C8693A' },
+  { id:2, name:'Salon Tóc 123',    slug:'salon123',   plan:'basic', expires:'2026-06-30', status:'active', phone:'0912 333 444', color:'#7C6EF5' },
+];
+
+let logs = [];
+let allBookings = []; // Tất cả lịch từ Google Sheets
+let editId = null, filterStatus = '', filterText = '';
+
+// ── LOAD TẤT CẢ LỊCH TỪ GOOGLE SHEETS ─────────────────────
+async function loadAllBookings() {
+  try {
+    document.getElementById('stat-total').textContent = '⏳';
+    const res  = await fetch(API_URL); // không có ?shopId → lấy tất cả
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error('API error');
+
+    allBookings = json.data || [];
+
+    // Tự động tạo danh sách shops từ dữ liệu thực nếu chưa có
+    const shopIds = [...new Set(allBookings.map(b => b.shopId).filter(Boolean))];
+    shopIds.forEach(sid => {
+      if (!shops.find(s => s.slug === sid)) {
+        shops.push({
+          id: Date.now() + Math.random(),
+          name: sid,
+          slug: sid,
+          plan: 'basic',
+          expires: new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+          status: 'active',
+          phone: '',
+          color: '#7C6EF5'
+        });
+      }
+    });
+
+    // Cập nhật stats booking cho từng shop
+    shops.forEach(s => {
+      const bks = allBookings.filter(b => b.shopId === s.slug);
+      s.totalBookings = bks.length;
+      s.pendingCount  = bks.filter(b => b.status === 'Chờ xác nhận').length;
+    });
+
+    // Log
+    if (allBookings.length > 0) {
+      const recent = allBookings[allBookings.length - 1];
+      logs.unshift({ time: recent.createdAt || 'Gần đây', action: 'Đặt lịch', shop: recent.shopId, detail: recent.customerName + ' – ' + recent.service });
+    }
+
+    renderAll();
+    toast(`✅ Đã load ${allBookings.length} lịch từ ${shops.length} shop`);
+  } catch(err) {
+    toast('❌ Lỗi kết nối Google Sheets', 'warn');
+    renderAll(); // vẫn render với data có sẵn
+  }
+}
+
+// Refresh mỗi 60 giây
+setInterval(loadAllBookings, 60000);
+
+// ── HELPERS ─────────────────────────────────────────────────
+function fmtMoney(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace('.0','') + 'tr';
+  if (n >= 1000)    return Math.round(n/1000) + 'k';
+  return n + 'đ';
+}
+function daysLeft(dateStr) {
+  const diff = new Date(dateStr) - new Date();
+  return Math.ceil(diff / 86400000);
+}
+function expiryText(dateStr) {
+  const d = daysLeft(dateStr);
+  if (d < 0)  return '<span style="color:var(--red)">Đã hết hạn</span>';
+  if (d === 0) return '<span style="color:var(--red)">Hết hạn hôm nay</span>';
+  if (d <= 7)  return `<span style="color:var(--amber)">Còn ${d} ngày</span>`;
+  return `<span style="color:var(--muted)">${new Date(dateStr).toLocaleDateString('vi-VN')}</span>`;
+}
+function statusBadge(s) {
+  const map = { active:'badge-active', inactive:'badge-inactive', trial:'badge-trial' };
+  const lbl = { active:'Đang dùng', inactive:'Đã khoá', trial:'Dùng thử' };
+  const dot = { active:'dot-active', inactive:'dot-inactive', trial:'dot-trial' };
+  return `<span class="badge ${map[s]}"><span class="plan-dot ${dot[s]}"></span>${lbl[s]}</span>`;
+}
+function planBadge(p) {
+  const pl = PLANS[p] || PLANS.basic;
+  return `<span class="badge" style="background:${pl.color};color:${pl.tc}">${pl.label}</span>`;
+}
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.innerHTML = (type==='ok'?'✅':'⚠️') + ' ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── STATS ───────────────────────────────────────────────────
+function updateStats() {
+  const active   = shops.filter(s => s.status === 'active').length;
+  const expiring = shops.filter(s => daysLeft(s.expires) <= 7 && s.status !== 'inactive').length;
+  const mrr      = shops.filter(s => s.status === 'active')
+                        .reduce((sum, s) => sum + (PLANS[s.plan]?.price || 0), 0);
+  const inactive = shops.filter(s => s.status === 'inactive').length;
+  const renew30  = shops.filter(s => daysLeft(s.expires) <= 30 && s.status !== 'inactive').length;
+
+  document.getElementById('stat-total').textContent    = shops.length;
+  document.getElementById('stat-active').textContent   = active;
+  document.getElementById('stat-expiring').textContent = expiring;
+  document.getElementById('stat-revenue').textContent  = fmtMoney(mrr) + 'đ';
+  document.getElementById('b-mrr').textContent   = fmtMoney(mrr) + 'đ';
+  document.getElementById('b-arr').textContent   = fmtMoney(mrr * 12) + 'đ';
+  document.getElementById('b-renew').textContent = renew30;
+  document.getElementById('b-locked').textContent = inactive;
+
+  // Bar chart (6 tháng giả lập)
+  const months = ['T12','T1','T2','T3','T4','T5'];
+  const vals   = [2400000, 3000000, 3600000, 4200000, 4800000, mrr];
+  const maxV   = Math.max(...vals);
+  document.getElementById('bar-chart').innerHTML = months.map((m,i) =>
+    `<div class="bar-col">
+      <div class="bar-val">${fmtMoney(vals[i])}</div>
+      <div class="bar" style="height:${Math.round(vals[i]/maxV*60)}px" title="${fmtMoney(vals[i])}đ"></div>
+      <div class="bar-lbl">${m}</div>
+    </div>`
+  ).join('');
+
+  // Plan breakdown
+  const plans = {};
+  shops.filter(s=>s.status==='active').forEach(s => { plans[s.plan] = (plans[s.plan]||0)+1; });
+  const pl = PLANS;
+  document.getElementById('plan-breakdown').innerHTML = Object.entries(plans).map(([p,cnt]) =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:${pl[p].color};border-radius:8px">
+      <span style="font-size:13px;font-weight:500;color:${pl[p].tc}">${pl[p].label}</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:13px;font-weight:600;color:${pl[p].tc}">${cnt} shop</span>
+        <span style="font-size:12px;color:${pl[p].tc};opacity:.7">${fmtMoney(pl[p].price*cnt)}/th</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ── OVERVIEW TABLE ───────────────────────────────────────────
+function renderOverview() {
+  document.getElementById('overview-table').innerHTML = shops.slice(0,5).map(s =>
+    `<tr>
+      <td><div class="shop-name">${s.name}</div><div class="shop-domain">${s.slug}.bookeasy.vn</div></td>
+      <td>${planBadge(s.plan)}</td>
+      <td>${expiryText(s.expires)}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td><div class="actions-cell">
+        ${s.status!=='inactive'
+          ? `<button class="btn btn-danger btn-sm" onclick="lockShop(${s.id})">🔒 Khoá</button>`
+          : `<button class="btn btn-success btn-sm" onclick="unlockShop(${s.id})">🔓 Mở</button>`}
+        <button class="btn btn-ghost btn-sm" onclick="renewShop(${s.id})">+1 tháng</button>
+      </div></td>
+    </tr>`
+  ).join('');
+}
+
+// ── SHOPS TABLE ─────────────────────────────────────────────
+function renderShops() {
+  let list = shops.filter(s => {
+    const q = filterText.toLowerCase();
+    const matchText = !q || s.name.toLowerCase().includes(q) || s.slug.includes(q);
+    const matchStatus = !filterStatus || s.status === filterStatus;
+    return matchText && matchStatus;
+  });
+  document.getElementById('shop-count').textContent = `(${list.length}/${shops.length})`;
+  document.getElementById('shops-table').innerHTML = list.map(s =>
+    `<tr class="${daysLeft(s.expires)<=7 && s.status!=='inactive' ? 'expiry-row' : ''}">
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:9px;background:${s.color}22;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏪</div>
+          <div>
+            <div class="shop-name">${s.name}</div>
+            <div class="shop-domain">${s.phone || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="link-box" style="margin:0;max-width:240px">
+          <span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.slug}.bookeasy.vn</span>
+          <button class="copy-link" onclick="copyText('https://${s.slug}.bookeasy.vn',this)">Copy</button>
+        </div>
+      </td>
+      <td>${planBadge(s.plan)}</td>
+      <td>${expiryText(s.expires)}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td><div class="actions-cell">
+        <button class="btn btn-ghost btn-sm" onclick="editShop(${s.id})">✏️ Sửa</button>
+        ${s.status!=='inactive'
+          ? `<button class="btn btn-danger btn-sm" onclick="lockShop(${s.id})">🔒</button>`
+          : `<button class="btn btn-success btn-sm" onclick="unlockShop(${s.id})">🔓</button>`}
+        <button class="btn btn-success btn-sm" onclick="renewShop(${s.id})">+1th</button>
+      </div></td>
+    </tr>`
+  ).join('');
+}
+
+// ── BILLING TABLE ────────────────────────────────────────────
+function renderBilling() {
+  document.getElementById('billing-table').innerHTML = shops.map(s => {
+    const p = PLANS[s.plan];
+    return `<tr>
+      <td><div class="shop-name">${s.name}</div><div class="shop-domain">${s.slug}</div></td>
+      <td>${planBadge(s.plan)}</td>
+      <td style="font-weight:600;color:var(--teal)">${p.price > 0 ? fmtMoney(p.price)+'đ/th' : 'Miễn phí'}</td>
+      <td>${expiryText(s.expires)}</td>
+      <td><div class="actions-cell">
+        <button class="btn btn-success btn-sm" onclick="renewShop(${s.id})">Gia hạn +1 tháng</button>
+        <button class="btn btn-ghost btn-sm" onclick="renewShop3(${s.id})">+3 tháng</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── EXPIRING TABLE ───────────────────────────────────────────
+function renderExpiring() {
+  const list = shops.filter(s => daysLeft(s.expires) <= 30 && s.status !== 'inactive');
+  document.getElementById('expiring-table').innerHTML = list.length === 0
+    ? `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">✅ Không có shop nào sắp hết hạn!</td></tr>`
+    : list.map(s => {
+        const d = daysLeft(s.expires);
+        return `<tr>
+          <td><div class="shop-name">${s.name}</div><div class="shop-domain">${s.phone||'—'}</div></td>
+          <td>${planBadge(s.plan)}</td>
+          <td>${new Date(s.expires).toLocaleDateString('vi-VN')}</td>
+          <td><span class="expiry-badge">${d <= 0 ? 'Đã hết hạn' : `Còn ${d} ngày`}</span></td>
+          <td><div class="actions-cell">
+            <button class="btn btn-primary btn-sm" onclick="renewShop(${s.id})">Gia hạn ngay</button>
+            <button class="btn btn-ghost btn-sm" onclick="copyText('0${s.phone||''}', this)">Copy SĐT</button>
+          </div></td>
+        </tr>`;
+      }).join('');
+}
+
+// ── LOGS TABLE ───────────────────────────────────────────────
+function renderLogs() {
+  document.getElementById('logs-table').innerHTML = logs.map(l =>
+    `<tr>
+      <td style="color:var(--muted);white-space:nowrap">${l.time}</td>
+      <td><span class="badge" style="background:var(--pl);color:var(--pm)">${l.action}</span></td>
+      <td><strong>${l.shop}</strong></td>
+      <td style="color:var(--muted)">${l.detail}</td>
+    </tr>`
+  ).join('');
+}
+
+// ── ACTIONS ─────────────────────────────────────────────────
+function lockShop(id) {
+  const s = shops.find(x => x.id === id);
+  if (!s) return;
+  if (!confirm(`Khoá "${s.name}"?\nApp của họ sẽ hiện màn hình khoá ngay lập tức.`)) return;
+  s.status = 'inactive';
+  logs.unshift({ time:'Vừa xong', action:'Khoá', shop:s.name, detail:'Khoá thủ công' });
+  renderAll(); toast(`Đã khoá ${s.name}`,'warn');
+}
+function unlockShop(id) {
+  const s = shops.find(x => x.id === id);
+  if (!s) return;
+  s.status = 'active';
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  s.expires = d.toISOString().split('T')[0];
+  logs.unshift({ time:'Vừa xong', action:'Mở khoá', shop:s.name, detail:'Mở lại truy cập' });
+  renderAll(); toast(`Đã mở khoá ${s.name}`);
+}
+function renewShop(id) {
+  const s = shops.find(x => x.id === id);
+  if (!s) return;
+  const base = new Date(s.expires) > new Date() ? new Date(s.expires) : new Date();
+  base.setMonth(base.getMonth()+1);
+  s.expires = base.toISOString().split('T')[0];
+  if (s.status === 'inactive') s.status = 'active';
+  logs.unshift({ time:'Vừa xong', action:'Gia hạn', shop:s.name, detail:'+1 tháng' });
+  renderAll(); toast(`Gia hạn ${s.name} thêm 1 tháng`);
+}
+function renewShop3(id) {
+  const s = shops.find(x => x.id === id);
+  if (!s) return;
+  const base = new Date(s.expires) > new Date() ? new Date(s.expires) : new Date();
+  base.setMonth(base.getMonth()+3);
+  s.expires = base.toISOString().split('T')[0];
+  if (s.status === 'inactive') s.status = 'active';
+  logs.unshift({ time:'Vừa xong', action:'Gia hạn', shop:s.name, detail:'+3 tháng' });
+  renderAll(); toast(`Gia hạn ${s.name} thêm 3 tháng`);
+}
+
+// ── MODAL ───────────────────────────────────────────────────
+function openModal() {
+  editId = null;
+  document.getElementById('modal-title-text').textContent = 'Thêm shop mới';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-slug').value = '';
+  document.getElementById('f-phone').value = '';
+  document.getElementById('f-color').value = '#7C6EF5';
+  document.getElementById('f-plan').value = 'pro';
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('f-expires').value = d.toISOString().split('T')[0];
+  previewLink();
+  document.getElementById('modal').classList.add('on');
+}
+function editShop(id) {
+  const s = shops.find(x => x.id === id);
+  if (!s) return;
+  editId = id;
+  document.getElementById('modal-title-text').textContent = 'Sửa shop: ' + s.name;
+  document.getElementById('f-name').value    = s.name;
+  document.getElementById('f-slug').value    = s.slug;
+  document.getElementById('f-phone').value   = s.phone || '';
+  document.getElementById('f-color').value   = s.color || '#7C6EF5';
+  document.getElementById('f-plan').value    = s.plan;
+  document.getElementById('f-expires').value = s.expires;
+  previewLink();
+  document.getElementById('modal').classList.add('on');
+}
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+function previewLink() {
+  const slug = document.getElementById('f-slug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  document.getElementById('link-text').textContent = slug ? `${slug}.bookeasy.vn` : 'slug.bookeasy.vn';
+}
+function saveShop() {
+  const name    = document.getElementById('f-name').value.trim();
+  const slug    = document.getElementById('f-slug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const plan    = document.getElementById('f-plan').value;
+  const expires = document.getElementById('f-expires').value;
+  const phone   = document.getElementById('f-phone').value.trim();
+  const color   = document.getElementById('f-color').value;
+  if (!name || !slug) { toast('Vui lòng nhập đầy đủ tên và slug','warn'); return; }
+  if (editId) {
+    const s = shops.find(x => x.id === editId);
+    Object.assign(s, { name, slug, plan, expires, phone, color });
+    logs.unshift({ time:'Vừa xong', action:'Cập nhật', shop:name, detail:'Thông tin đã được cập nhật' });
+    toast(`Đã cập nhật ${name}`);
+  } else {
+    const exists = shops.find(x => x.slug === slug);
+    if (exists) { toast('Slug này đã tồn tại!','warn'); return; }
+    shops.unshift({ id: Date.now(), name, slug, plan, expires, status: plan==='trial'?'trial':'active', phone, color });
+    logs.unshift({ time:'Vừa xong', action:'Thêm shop', shop:name, detail:`Kích hoạt gói ${PLANS[plan].label}` });
+    toast(`Đã thêm shop ${name}`);
+  }
+  closeModal(); renderAll();
+}
+
+// ── FILTER ──────────────────────────────────────────────────
+function filterShops(v) { filterText = v; renderShops(); }
+function filterByStatus(v) { filterStatus = v; renderShops(); }
+
+// ── COPY ────────────────────────────────────────────────────
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) { const orig=btn.textContent; btn.textContent='✓'; btn.classList.add('ok'); setTimeout(()=>{btn.textContent=orig;btn.classList.remove('ok')},1500); }
+    else toast('Đã copy!');
+  });
+}
+function copyLink() {
+  const txt = document.getElementById('link-text').textContent;
+  copyText('https://' + txt);
+  toast('Đã copy link!');
+}
+
+// ── PAGES ───────────────────────────────────────────────────
+const titles = { 'p-overview':'Tổng quan', 'p-shops':'Cửa hàng', 'p-billing':'Thanh toán', 'p-expiring':'Sắp hết hạn', 'p-logs':'Activity Log' };
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  document.getElementById('topbar-title').textContent = titles[id] || '';
+}
+
+// ── RENDER ALL ──────────────────────────────────────────────
+function renderAll() {
+  updateStats();
+  renderOverview();
+  renderShops();
+  renderBilling();
+  renderExpiring();
+  renderLogs();
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// Thêm cột booking thật vào renderShops
+const _origRenderShops = renderShops;
+
+// Khởi động — load dữ liệu thật từ Google Sheets
+loadAllBookings();
+</script>
+</body>
+</html>

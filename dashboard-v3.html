@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dashboard – Spa Hoa Lan</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--sc:#C8693A;--sl:#FDF0E8;--ink:#0F0D1A;--bg:#F6F4F1;--card:#fff;--muted:#7A7468;--border:#EDE9E2;--teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;--red:#E5484D;--rl:#FFECEC;--amber:#D4850A;--al:#FFF4DE;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--ink);max-width:430px;margin:0 auto;min-height:100vh}
+
+/* LOGIN */
+#login{background:var(--card);min-height:100vh;padding:48px 24px 32px;display:flex;flex-direction:column}
+.logo-box{width:56px;height:56px;background:var(--sc);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:24px}
+#login h2{font-size:26px;font-weight:600;margin-bottom:8px}
+#login p{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.demo-box{background:var(--sl);border-radius:10px;padding:12px 14px;margin-bottom:24px;font-size:13px;color:var(--sc);line-height:1.7}
+.demo-box b{font-weight:600}
+.login-btn{width:100%;padding:16px;background:var(--sc);color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;margin-top:8px;-webkit-tap-highlight-color:transparent}
+.login-btn:active{opacity:.85;transform:scale(.98)}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-l{display:flex;align-items:center;gap:9px}
+.tb-av{width:36px;height:36px;background:var(--sc);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tb-name{font-size:14px;font-weight:600}
+.tb-sub{font-size:11px;color:var(--muted)}
+.out-btn{padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;font-family:'Be Vietnam Pro',sans-serif}
+
+.content{flex:1;padding:14px 14px 80px;overflow-y:auto}
+.page{display:none}.page.on{display:block}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:50}
+.nb{flex:1;padding:9px 4px 8px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:500;color:var(--muted);border-top:2px solid transparent;font-family:'Be Vietnam Pro',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nb.on{color:var(--sc);border-top-color:var(--sc)}
+.nb span:first-child{font-size:20px;position:relative}
+.nb-dot{position:absolute;top:-2px;right:-6px;width:14px;height:14px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--card)}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.sc2{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:13px 14px}
+.sc2-lbl{font-size:11px;font-weight:500;color:var(--muted);margin-bottom:3px}
+.sc2-val{font-size:24px;font-weight:600}
+.sc2-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* FILTER */
+.fr{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px}
+.fr::-webkit-scrollbar{display:none}
+.ft{white-space:nowrap;padding:6px 13px;border:1.5px solid var(--border);border-radius:30px;font-size:13px;font-weight:500;cursor:pointer;background:var(--card);color:var(--muted);font-family:'Be Vietnam Pro',sans-serif}
+.ft.on{background:var(--sl);color:var(--sc);border-color:var(--sc)}
+
+/* BOOKING CARD */
+.bc{background:var(--card);border-radius:12px;border:1px solid var(--border);margin-bottom:9px;overflow:hidden}
+.bc.pending{border-left:3px solid var(--sc)}
+.bc.confirmed{border-left:3px solid var(--teal)}
+.bc.cancelled{border-left:3px solid var(--red);opacity:.6}
+.bc-in{padding:12px 13px}
+.bc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.bc-name{font-size:15px;font-weight:600}
+.bc-ph{font-size:12px;color:var(--muted);margin-top:1px}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.tag.pending{background:var(--al);color:var(--amber)}
+.tag.confirmed{background:var(--tl);color:var(--td)}
+.tag.cancelled{background:var(--rl);color:var(--red)}
+.bc-meta{display:flex;flex-wrap:wrap;gap:9px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:7px}
+.bc-svc{font-size:13px;color:var(--muted);margin-bottom:9px}
+.bc-acts{display:flex;gap:6px}
+.ba{flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Be Vietnam Pro',sans-serif}
+.ba.ok{background:var(--tl);color:var(--td)}
+.ba.no{background:var(--rl);color:var(--red)}
+.ba.dis{background:var(--bg);color:var(--muted);cursor:default}
+.bc-ft{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:6px 13px;border-top:1px solid var(--border);background:var(--bg)}
+.gd{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.bc-note{font-size:12px;color:var(--muted);background:var(--bg);border-radius:7px;padding:6px 9px;margin-bottom:8px}
+
+/* REVENUE */
+.rs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.rc{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:13px 14px;overflow:hidden;position:relative}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rc.g::before{background:linear-gradient(90deg,transparent,var(--sc),transparent)}
+.rc.t::before{background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+.rc.b::before{background:linear-gradient(90deg,transparent,#1E4FA8,transparent)}
+.rc.a::before{background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.rc-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.rc-val{font-size:22px;font-weight:600;line-height:1;margin-bottom:3px}
+.rc-sub{font-size:11px;color:var(--muted)}
+
+.chart-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:12px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ch-title{font-size:14px;font-weight:600}
+.ptabs{display:flex;gap:3px;background:var(--bg);border-radius:7px;padding:3px}
+.pt2{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:'Be Vietnam Pro',sans-serif}
+.pt2.on{background:var(--card);color:var(--ink)}
+.chart{display:flex;align-items:flex-end;gap:5px;height:80px}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bfill{width:100%;border-radius:4px 4px 0 0;transition:height .4s}
+.blbl{font-size:9px;color:var(--muted)}
+.bamt{font-size:9px;font-weight:600;color:var(--sc)}
+
+.svc-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:12px}
+.svc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.svc-row:last-child{border-bottom:none}
+.svc-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.svc-name{font-size:13px;font-weight:500}
+.svc-cnt{font-size:11px;color:var(--muted);margin-top:1px}
+.prog{height:3px;background:var(--bg);border-radius:2px;margin-top:5px}
+.prog-f{height:100%;border-radius:2px;background:var(--sc);transition:width .5s}
+.svc-rev{font-size:13px;font-weight:600;color:var(--sc);text-align:right}
+.svc-pct{font-size:11px;color:var(--muted);text-align:right;margin-top:1px}
+
+.cust-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:12px}
+.cr2{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.cr2:last-child{border-bottom:none}
+.cr2-rank{width:20px;height:20px;border-radius:50%;background:var(--bg);color:var(--muted);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cr2-rank.top{background:var(--sl);color:var(--sc)}
+.cr2-av{width:32px;height:32px;border-radius:50%;background:var(--sl);color:var(--sc);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cr2-name{font-size:13px;font-weight:500;flex:1}
+.cr2-info{font-size:11px;color:var(--muted)}
+.cr2-rev{font-size:13px;font-weight:600;text-align:right}
+.cr2-cnt{font-size:11px;color:var(--muted);text-align:right}
+
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.ins{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:12px 13px}
+.ins-lbl{font-size:11px;color:var(--muted);margin-bottom:4px}
+.ins-val{font-size:14px;font-weight:600}
+.ins-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* SETTINGS */
+.scard{background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--border);cursor:pointer}
+.sr:last-child{border-bottom:none}
+.sr-l{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.sr-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sr-r{font-size:13px;color:var(--muted)}
+.tog{width:42px;height:24px;border-radius:30px;background:var(--border);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--teal)}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on::after{left:21px}
+
+.sec-h{font-size:14px;font-weight:600;margin-bottom:10px}
+.empty{text-align:center;padding:40px 16px;color:var(--muted);font-size:14px}
+
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .25s;z-index:300;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN ════ -->
+<div id="login">
+  <div class="logo-box">📅</div>
+  <h2>BookEasy Dashboard</h2>
+  <p>Nhập Shop ID để xem lịch hẹn và doanh thu tiệm của bạn.</p>
+  <div style="margin-bottom:14px">
+    <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">SHOP ID *</label>
+    <input id="shop-id-input" type="text" placeholder="vd: hoalan, salon123..."
+      style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:'Be Vietnam Pro',sans-serif;color:var(--ink);outline:none"
+      onfocus="this.style.borderColor='var(--sc)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter')enterApp()">
+  </div>
+  <div class="demo-box">
+    💡 <b>Shop ID mẫu để test:</b><br>
+    <span style="font-family:monospace">hoalan</span> → Spa Hoa Lan<br>
+    <span style="font-family:monospace">salon123</span> → Salon Tóc 123
+  </div>
+  <button class="login-btn" onclick="enterApp()">▶ Vào Dashboard</button>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-l">
+      <div class="tb-av">🌿</div>
+      <div><div class="tb-name">Spa Hoa Lan</div><div class="tb-sub">Q.1 · TP.HCM</div></div>
+    </div>
+    <button class="out-btn" onclick="exitApp()">Đăng xuất</button>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE 1: LỊCH HẸN -->
+    <div class="page on" id="p1">
+      <div class="sg">
+        <div class="sc2"><div class="sc2-lbl">Hôm nay</div><div class="sc2-val" id="s1" style="color:var(--sc)">3</div><div class="sc2-sub">lịch hẹn</div></div>
+        <div class="sc2"><div class="sc2-lbl">Chờ xác nhận</div><div class="sc2-val" id="s2" style="color:var(--amber)">2</div><div class="sc2-sub">cần duyệt</div></div>
+        <div class="sc2"><div class="sc2-lbl">Đã xác nhận</div><div class="sc2-val" id="s3" style="color:var(--teal)">5</div><div class="sc2-sub">tháng này</div></div>
+        <div class="sc2"><div class="sc2-lbl">Doanh thu hôm nay</div><div class="sc2-val" id="s4" style="color:var(--teal);font-size:18px">350k</div><div class="sc2-sub">đã xác nhận</div></div>
+      </div>
+      <div class="fr">
+        <button class="ft on" onclick="flt('all',this)">Tất cả</button>
+        <button class="ft" onclick="flt('today',this)">Hôm nay</button>
+        <button class="ft" onclick="flt('pending',this)">Chờ duyệt</button>
+        <button class="ft" onclick="flt('confirmed',this)">Đã xác nhận</button>
+        <button class="ft" onclick="flt('cancelled',this)">Đã huỷ</button>
+      </div>
+      <div id="blist"></div>
+    </div>
+
+    <!-- PAGE 2: DOANH THU -->
+    <div class="page" id="p2">
+      <div class="sec-h">📊 Thống kê doanh thu</div>
+      <div class="rs">
+        <div class="rc g"><div class="rc-lbl">Hôm nay</div><div class="rc-val" id="r1" style="color:var(--sc)">350kđ</div><div class="rc-sub" id="r1s">2 lịch hẹn</div></div>
+        <div class="rc t"><div class="rc-lbl">Tuần này</div><div class="rc-val" id="r2" style="color:var(--teal)">980kđ</div><div class="rc-sub" id="r2s">5 lịch hẹn</div></div>
+        <div class="rc b"><div class="rc-lbl">Tháng này</div><div class="rc-val" id="r3" style="color:#1E4FA8">2.1trđ</div><div class="rc-sub" id="r3s">11 lịch hẹn</div></div>
+        <div class="rc a"><div class="rc-lbl">TB / lịch</div><div class="rc-val" id="r4" style="color:var(--amber)">145kđ</div><div class="rc-sub" id="r4s">trung bình</div></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="ch">
+          <div class="ch-title">Doanh thu theo thời gian</div>
+          <div class="ptabs">
+            <button class="pt2 on" onclick="drawChart('week',this)">Tuần</button>
+            <button class="pt2" onclick="drawChart('month',this)">Tháng</button>
+          </div>
+        </div>
+        <div class="chart" id="chart"></div>
+      </div>
+
+      <div class="svc-card">
+        <div class="sec-h">Theo dịch vụ</div>
+        <div id="svc-list"></div>
+      </div>
+
+      <div class="cust-card">
+        <div class="sec-h">Khách thân thiết</div>
+        <div id="cust-list"></div>
+      </div>
+
+      <div class="sec-h">💡 Insights</div>
+      <div class="ins-grid">
+        <div class="ins"><div class="ins-lbl">Giờ cao điểm</div><div class="ins-val">10:00–11:30</div><div class="ins-sub">Buổi sáng</div></div>
+        <div class="ins"><div class="ins-lbl">Ngày bận nhất</div><div class="ins-val">T6 & T7</div><div class="ins-sub">Cuối tuần</div></div>
+        <div class="ins"><div class="ins-lbl">Tỉ lệ xác nhận</div><div class="ins-val" id="ins1">—</div><div class="ins-sub">confirmed/total</div></div>
+        <div class="ins"><div class="ins-lbl">Tỉ lệ huỷ</div><div class="ins-val" id="ins2">—</div><div class="ins-sub">cancel/total</div></div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: CÀI ĐẶT -->
+    <div class="page" id="p3">
+      <div class="sec-h">⚙️ Cài đặt</div>
+      <div class="scard">
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">🌿</div>Thông tin shop</div><div class="sr-r">Spa Hoa Lan →</div></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📆</div>Google Calendar</div><div class="sr-r" style="color:var(--teal)">Đã kết nối ✓</div></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--tl)">🔔</div>Thông báo Zalo</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--al)">📧</div>Email tự động</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--rl)">⚡</div>Tự động xác nhận</div><button class="tog" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
+      </div>
+      <div class="scard">
+        <div class="sr" onclick="copyLink()"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">🔗</div>Link đặt lịch</div><div class="sr-r">Copy →</div></div>
+        <div class="sr" onclick="toast('Mở hướng dẫn FB...')"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📘</div>Nhúng Facebook</div><div class="sr-r">→</div></div>
+      </div>
+      <div class="scard">
+        <div class="sr" style="cursor:default"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">💳</div>Gói hiện tại</div><div class="sr-r"><span style="background:var(--sl);color:var(--sc);font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px">Pro · 599k/th</span></div></div>
+        <div class="sr" style="cursor:default"><div class="sr-l"><div class="sr-ico" style="background:var(--al)">⏰</div>Hết hạn</div><div class="sr-r" style="color:var(--teal)">01/08/2025</div></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bnav">
+    <button class="nb on" id="nb1" onclick="go('p1',this)">
+      <span>📋<span class="nb-dot" id="nbd">2</span></span>
+      <span>Lịch hẹn</span>
+    </button>
+    <button class="nb" id="nb2" onclick="go('p2',this);initRevenue()">
+      <span>📊</span><span>Doanh thu</span>
+    </button>
+    <button class="nb" id="nb3" onclick="go('p3',this)">
+      <span>⚙️</span><span>Cài đặt</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycbxEQM2ND__mgHGnRvfsRm_DybcTo4zDO6lwhVQK6EtQB8AWDpwOffUvqtx55qklwOv-/exec';
+const T = new Date(), TS = T.toISOString().slice(0,10);
+function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.toISOString().slice(0,10)}
+const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
+
+// SHOP_ID được set khi đăng nhập
+let SHOP_ID = '';
+let BK = [];
+let curFlt='all', revDone=false;
+let autoRefreshTimer = null;
+
+// ── HELPERS ──────────────────────────────────────────────
+function fmt(n){if(n>=1000000)return(n/1000000).toFixed(1).replace('.0','')+'tr';return Math.round(n/1000)+'k'}
+function fmtF(n){return n.toLocaleString('vi-VN')+'đ'}
+function fmtD(d){const dt=new Date(d+'T00:00');return DAYS[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1)}
+function toast(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
+function copyLink(){
+  const link = `https://yourdomain.com/booking-customer.html?shop=${SHOP_ID}`;
+  navigator.clipboard.writeText(link).then(()=>toast('✅ Đã copy link!')).catch(()=>toast(link));
+}
+
+// ── LOAD DỮ LIỆU TỪ GOOGLE SHEETS ───────────────────────
+async function loadBookings(){
+  try {
+    document.getElementById('blist').innerHTML = '<div class="empty">⏳ Đang tải dữ liệu...</div>';
+    const res = await fetch(`${API_URL}?shopId=${encodeURIComponent(SHOP_ID)}`);
+    const json = await res.json();
+    if(json.status !== 'ok') throw new Error('API error');
+
+    // Chuyển đổi từ Google Sheets sang format BK
+    BK = json.data.map((r, i) => ({
+      id:    i + 1,
+      rowIndex: i + 2, // row trong sheet (1-indexed, bỏ header)
+      shopId: r.shopId,
+      name:  r.customerName,
+      phone: r.customerPhone,
+      svc:   r.service,
+      dur:   60, // mặc định, có thể thêm cột duration sau
+      price: parseInt(r.price) || 0,
+      date:  r.date ? String(r.date).slice(0,10) : '',
+      time:  r.time || '',
+      note:  r.note || '',
+      st:    r.status === 'Đã xác nhận' ? 'confirmed'
+           : r.status === 'Đã huỷ'     ? 'cancelled'
+           : 'pending',
+      createdAt: r.createdAt || ''
+    }));
+
+    renderBookings();
+    updateStats();
+    revDone = false; // reset để re-render doanh thu
+  } catch(err) {
+    document.getElementById('blist').innerHTML = '<div class="empty">❌ Không tải được dữ liệu. Kiểm tra kết nối!</div>';
+    toast('❌ Lỗi tải dữ liệu');
+  }
+}
+
+// ── CẬP NHẬT TRẠNG THÁI LÊN SHEETS ──────────────────────
+async function updateStatus(rowIndex, newStatus, displayName){
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'updateStatus',
+        rowIndex: rowIndex,
+        status: newStatus
+      })
+    });
+    toast(displayName);
+    // Reload sau 1.5s để đồng bộ
+    setTimeout(loadBookings, 1500);
+  } catch(err) {
+    toast('❌ Lỗi cập nhật!');
+  }
+}
+
+// ── LOGIN / LOGOUT ────────────────────────────────────────
+function enterApp(){
+  const shopInput = document.getElementById('shop-id-input');
+  SHOP_ID = shopInput ? shopInput.value.trim() : 'hoalan';
+  if(!SHOP_ID){ toast('Vui lòng nhập Shop ID!'); return; }
+
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+
+  // Hiển thị tên shop
+  document.querySelector('.tb-name').textContent = SHOP_ID;
+
+  // Load dữ liệu thật
+  loadBookings();
+
+  // Tự động refresh mỗi 30 giây
+  autoRefreshTimer = setInterval(loadBookings, 30000);
+}
+
+function exitApp(){
+  if(!confirm('Đăng xuất?'))return;
+  clearInterval(autoRefreshTimer);
+  BK = []; SHOP_ID = ''; revDone = false;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+}
+
+// ── STATS ─────────────────────────────────────────────────
+function updateStats(){
+  const conf=BK.filter(b=>b.st==='confirmed');
+  const pend=BK.filter(b=>b.st==='pending');
+  const todayOk=BK.filter(b=>b.date===TS&&b.st!=='cancelled');
+  const todayRev=BK.filter(b=>b.date===TS&&b.st==='confirmed').reduce((s,b)=>s+b.price,0);
+  document.getElementById('s1').textContent=todayOk.length;
+  document.getElementById('s2').textContent=pend.length;
+  document.getElementById('s3').textContent=conf.length;
+  document.getElementById('s4').textContent=fmt(todayRev)+'đ';
+  const nb=document.getElementById('nbd');
+  nb.textContent=pend.length;
+  nb.style.display=pend.length?'flex':'none';
+}
+
+// ── BOOKINGS ──────────────────────────────────────────────
+function renderBookings(){
+  let list=BK.slice();
+  if(curFlt==='today') list=list.filter(b=>b.date===TS);
+  else if(curFlt==='pending') list=list.filter(b=>b.st==='pending');
+  else if(curFlt==='confirmed') list=list.filter(b=>b.st==='confirmed');
+  else if(curFlt==='cancelled') list=list.filter(b=>b.st==='cancelled');
+  list.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+
+  const el=document.getElementById('blist');
+  if(!list.length){el.innerHTML='<div class="empty">📭 Không có lịch hẹn nào.</div>';return;}
+  const lb={pending:'Chờ xác nhận',confirmed:'Đã xác nhận',cancelled:'Đã huỷ'};
+  let lastD='', html='';
+  list.forEach(b=>{
+    if(b.date!==lastD){
+      lastD=b.date;
+      const dl=b.date===TS?'Hôm nay':fmtD(b.date);
+      html+=`<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 2px 4px;margin-top:4px">${dl}</div>`;
+    }
+    const ac=b.st==='pending'
+      ?`<button class="ba ok" onclick="conf(${b.id})">✓ Xác nhận</button><button class="ba no" onclick="canc(${b.id})">✕ Huỷ</button>`
+      :b.st==='confirmed'
+      ?`<button class="ba dis" style="flex:.5">✓ OK</button><button class="ba no" style="flex:.8" onclick="canc(${b.id})">✕ Huỷ</button>`
+      :`<span style="font-size:12px;color:var(--muted)">Đã huỷ</span>`;
+    const nt=b.note?`<div class="bc-note">📝 ${b.note}</div>`:'';
+    const ft=b.st!=='cancelled'?`<div class="bc-ft"><span class="gd"></span>Đồng bộ Google Sheets ✓</div>`:'';
+    html+=`<div class="bc ${b.st}"><div class="bc-in">
+      <div class="bc-top"><div><div class="bc-name">${b.name}</div><div class="bc-ph">📞 ${b.phone}</div></div><span class="tag ${b.st}">${lb[b.st]}</span></div>
+      <div class="bc-meta"><span>📅 ${fmtD(b.date)}</span><span>🕐 ${b.time}</span><span>💰 ${fmt(b.price)}đ</span></div>
+      <div class="bc-svc">${b.svc}</div>
+      ${nt}<div class="bc-acts">${ac}</div></div>${ft}</div>`;
+  });
+  el.innerHTML=html;
+}
+
+function conf(id){
+  const b=BK.find(x=>x.id===id);
+  if(!b)return;
+  b.st='confirmed';
+  renderBookings();updateStats();
+  updateStatus(b.rowIndex, 'Đã xác nhận', '✓ Đã xác nhận – '+b.name);
+}
+function canc(id){
+  const b=BK.find(x=>x.id===id);
+  if(!b)return;
+  if(!confirm('Huỷ lịch của '+b.name+'?'))return;
+  b.st='cancelled';
+  renderBookings();updateStats();
+  updateStatus(b.rowIndex, 'Đã huỷ', 'Đã huỷ lịch – '+b.name);
+}
+function flt(f,btn){curFlt=f;document.querySelectorAll('.ft').forEach(x=>x.classList.remove('on'));btn.classList.add('on');renderBookings();}
+
+// ── REVENUE ───────────────────────────────────────────────
+function initRevenue(){
+  if(revDone)return;revDone=true;
+  const conf=BK.filter(b=>b.st==='confirmed');
+  const now=new Date();
+  const todayRev=conf.filter(b=>b.date===TS).reduce((s,b)=>s+b.price,0);
+  const todayCnt=conf.filter(b=>b.date===TS).length;
+  const wkStart=new Date(now);wkStart.setDate(now.getDate()-now.getDay());
+  const wkS=wkStart.toISOString().slice(0,10);
+  const wkConf=conf.filter(b=>b.date>=wkS);
+  const wkRev=wkConf.reduce((s,b)=>s+b.price,0);
+  const mPfx=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const mConf=conf.filter(b=>b.date.startsWith(mPfx));
+  const mRev=mConf.reduce((s,b)=>s+b.price,0);
+  const avg=conf.length?Math.round(conf.reduce((s,b)=>s+b.price,0)/conf.length):0;
+  document.getElementById('r1').textContent=fmt(todayRev)+'đ';
+  document.getElementById('r1s').textContent=todayCnt+' lịch hẹn';
+  document.getElementById('r2').textContent=fmt(wkRev)+'đ';
+  document.getElementById('r2s').textContent=wkConf.length+' lịch hẹn';
+  document.getElementById('r3').textContent=fmt(mRev)+'đ';
+  document.getElementById('r3s').textContent=mConf.length+' lịch hẹn';
+  document.getElementById('r4').textContent=fmt(avg)+'đ';
+  document.getElementById('r4s').textContent='từ '+conf.length+' lịch';
+  const total=BK.length;
+  document.getElementById('ins1').textContent=total?Math.round(conf.length/total*100)+'%':'—';
+  const cc=BK.filter(b=>b.st==='cancelled').length;
+  document.getElementById('ins2').textContent=total?Math.round(cc/total*100)+'%':'—';
+  drawChart('week',document.querySelector('.pt2.on'));
+  renderSvc(conf);
+  renderCust(conf);
+}
+
+function drawChart(period,btn){
+  if(btn){document.querySelectorAll('.pt2').forEach(x=>x.classList.remove('on'));btn.classList.add('on');}
+  const conf=BK.filter(b=>b.st==='confirmed');
+  let cols=[];
+  if(period==='week'){
+    for(let i=6;i>=0;i--){
+      const d=new Date(T);d.setDate(T.getDate()-i);
+      const dstr=d.toISOString().slice(0,10);
+      const rev=conf.filter(b=>b.date===dstr).reduce((s,b)=>s+b.price,0);
+      cols.push({lbl:DAYS[d.getDay()],rev,hi:dstr===TS});
+    }
+  } else {
+    for(let i=5;i>=0;i--){
+      const d=new Date(T);d.setMonth(T.getMonth()-i);
+      const mPfx=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      const rev=conf.filter(b=>b.date.startsWith(mPfx)).reduce((s,b)=>s+b.price,0);
+      cols.push({lbl:'T'+(d.getMonth()+1),rev,hi:i===0});
+    }
+  }
+  const mx=Math.max(...cols.map(c=>c.rev),1);
+  document.getElementById('chart').innerHTML=cols.map(c=>`
+    <div class="bcol">
+      <div class="bamt">${c.rev>0?fmt(c.rev):''}</div>
+      <div class="bfill" style="height:${Math.max(Math.round(c.rev/mx*64),2)}px;background:${c.hi?'var(--sc)':'var(--sl)'}"></div>
+      <div class="blbl" style="color:${c.hi?'var(--sc)':'var(--muted)'};font-weight:${c.hi?600:400}">${c.lbl}</div>
+    </div>`).join('');
+}
+
+function renderSvc(conf){
+  const map={};
+  conf.forEach(b=>{
+    const parts=b.svc.split(' ');
+    const ico=parts[0];
+    const nm=parts.slice(1).join(' ');
+    if(!map[nm]) map[nm]={ico,nm,cnt:0,rev:0};
+    map[nm].cnt++;map[nm].rev+=b.price;
+  });
+  const list=Object.values(map).sort((a,b)=>b.rev-a.rev);
+  const mx=list[0]?.rev||1;
+  const total=conf.reduce((s,b)=>s+b.price,0)||1;
+  const bg=['var(--sl)','var(--tl)','#E8F0FF','var(--al)'];
+  document.getElementById('svc-list').innerHTML=list.length?list.map((s,i)=>`
+    <div class="svc-row">
+      <div class="svc-ico" style="background:${bg[i%4]}">${s.ico}</div>
+      <div style="flex:1;min-width:0">
+        <div class="svc-name">${s.nm}</div>
+        <div class="svc-cnt">${s.cnt} lần đặt</div>
+        <div class="prog"><div class="prog-f" style="width:${Math.round(s.rev/mx*100)}%"></div></div>
+      </div>
+      <div>
+        <div class="svc-rev">${fmtF(s.rev)}</div>
+        <div class="svc-pct">${Math.round(s.rev/total*100)}%</div>
+      </div>
+    </div>`).join(''):'<div class="empty">Chưa có dữ liệu</div>';
+}
+
+function renderCust(conf){
+  const map={};
+  conf.forEach(b=>{
+    if(!map[b.phone]) map[b.phone]={name:b.name,phone:b.phone,cnt:0,rev:0};
+    map[b.phone].cnt++;map[b.phone].rev+=b.price;
+  });
+  const list=Object.values(map).sort((a,b)=>b.rev-a.rev).slice(0,5);
+  document.getElementById('cust-list').innerHTML=list.length?list.map((c,i)=>`
+    <div class="cr2">
+      <div class="cr2-rank ${i<3?'top':''}">${i+1}</div>
+      <div class="cr2-av">${c.name.split(' ').pop()[0]}</div>
+      <div style="flex:1">
+        <div class="cr2-name">${c.name}</div>
+        <div class="cr2-info">📞 ${c.phone}</div>
+      </div>
+      <div>
+        <div class="cr2-rev">${fmtF(c.rev)}</div>
+        <div class="cr2-cnt">${c.cnt} lần</div>
+      </div>
+    </div>`).join(''):'<div class="empty">Chưa có dữ liệu</div>';
+}
+
+// ── NAV ───────────────────────────────────────────────────
+function go(pid,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(pid).classList.add('on');
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>
