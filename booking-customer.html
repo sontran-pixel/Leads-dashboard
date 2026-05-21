@@ -224,22 +224,40 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 // ════════════════════════════════════════════════════════════
 
 const SHOP_CONFIGS = {
-  "hoalan": {
-    shopName: "Spa Hoa Lan",
-    shopEmoji: "🌿",
-    shopAddress: "12 Nguyễn Huệ, Q.1, TP.HCM",
-    color: "#C8693A",
-    colorLight: "#FDF0E8",
-    colorDark: "#9A4E2A",
-    slots: ["09:00","09:30","10:00","10:30","11:00","11:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30"],
-    blockedSlots: ["10:00","13:30","15:00"],
-    services: [
-      { name: "Massage thư giãn",    duration: 60, price: 150000, icon: "💆" },
-      { name: "Chăm sóc da mặt",     duration: 45, price: 200000, icon: "✨" },
-      { name: "Gội đầu + massage",   duration: 30, price:  80000, icon: "💇" },
-      { name: "Làm móng tay & chân", duration: 60, price: 120000, icon: "💅" }
-    ]
-  },
+  "quynhspa": {
+  "shopId": "quynhspa",
+  "shopName": "Quỳnh Spa",
+  "shopEmoji": "🌸",
+  "shopAddress": "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai",
+  "color": "#E8477A",
+  "colorLight": "#FDE8EF",
+  "colorDark": "#B8305A",
+  "slots": [
+    "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+    "13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"
+  ],
+  "blockedSlots": [],
+  "services": [
+    {
+      "name": "Gội Đầu Cơ Bản",
+      "duration": 20,
+      "price": 50000,
+      "icon": "💆"
+    },
+    {
+      "name": "Gội Đầu Thư Giãn",
+      "duration": 40,
+      "price": 79000,
+      "icon": "✨"
+    },
+    {
+      "name": "Gội Đầu Chuyên Sâu",
+      "duration": 60,
+      "price": 179000,
+      "icon": "👑"
+    }
+  ]
+},
   "salon123": {
     shopName: "Salon Tóc 123",
     shopEmoji: "✂️",
