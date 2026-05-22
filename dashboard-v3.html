@@ -145,6 +145,9 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .25s;z-index:300;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.rng-wrap{display:flex;gap:6px;margin:12px 16px 0;flex-wrap:nowrap}
+.rng-btn{flex:1;padding:7px 2px;border:1.5px solid var(--bdr);border-radius:10px;background:var(--bg);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:.15s;text-align:center}
+.rng-btn.on{background:var(--sc);border-color:var(--sc);color:#fff;font-weight:700}
 </style>
 </head>
 <body>
@@ -202,11 +205,17 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
     <!-- PAGE 2: DOANH THU -->
     <div class="page" id="p2">
       <div class="sec-h">📊 Thống kê doanh thu</div>
+      <div class="rng-wrap">
+        <button class="rng-btn on" onclick="setRange(1,this)">Tháng này</button>
+        <button class="rng-btn" onclick="setRange(3,this)">3 tháng</button>
+        <button class="rng-btn" onclick="setRange(6,this)">6 tháng</button>
+        <button class="rng-btn" onclick="setRange(12,this)">1 năm</button>
+      </div>
       <div class="rs">
-        <div class="rc g"><div class="rc-lbl">Hôm nay</div><div class="rc-val" id="r1" style="color:var(--sc)">350kđ</div><div class="rc-sub" id="r1s">2 lịch hẹn</div></div>
-        <div class="rc t"><div class="rc-lbl">Tuần này</div><div class="rc-val" id="r2" style="color:var(--teal)">980kđ</div><div class="rc-sub" id="r2s">5 lịch hẹn</div></div>
-        <div class="rc b"><div class="rc-lbl">Tháng này</div><div class="rc-val" id="r3" style="color:#1E4FA8">2.1trđ</div><div class="rc-sub" id="r3s">11 lịch hẹn</div></div>
-        <div class="rc a"><div class="rc-lbl">TB / lịch</div><div class="rc-val" id="r4" style="color:var(--amber)">145kđ</div><div class="rc-sub" id="r4s">trung bình</div></div>
+        <div class="rc g"><div class="rc-lbl">Hôm nay</div><div class="rc-val" id="r1" style="color:var(--sc)">—</div><div class="rc-sub" id="r1s">0 lịch hẹn</div></div>
+        <div class="rc t"><div class="rc-lbl">Tuần này</div><div class="rc-val" id="r2" style="color:var(--teal)">—</div><div class="rc-sub" id="r2s">0 lịch hẹn</div></div>
+        <div class="rc b"><div class="rc-lbl" id="r3lbl">THÁNG NÀY</div><div class="rc-val" id="r3" style="color:#1E4FA8">—</div><div class="rc-sub" id="r3s">0 lịch hẹn</div></div>
+        <div class="rc a"><div class="rc-lbl">TB / lịch</div><div class="rc-val" id="r4" style="color:var(--amber)">—</div><div class="rc-sub" id="r4s">trung bình</div></div>
       </div>
 
       <div class="chart-card">
@@ -278,7 +287,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbxEQM2ND__mgHGnRvfsRm_DybcTo4zDO6lwhVQK6EtQB8AWDpwOffUvqtx55qklwOv-/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxc1bb98fNOZg1Y5xoxLplW7UgS49R0KLHU_tb49zG7ZVJoBHmEAWUJj_IBFbAmNuoe/exec';
 const T = new Date();
 // Dùng ngày local (UTC+7) thay vì ISO UTC để tránh lệch ngày
 const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String(T.getDate()).padStart(2,'0');
@@ -298,7 +307,7 @@ const SHOP_CONFIGS = {
 // SHOP_ID được set khi đăng nhập
 let SHOP_ID = '';
 let BK = [];
-let curFlt='all', revDone=false;
+let curFlt='all', revDone=false, loadedMonths=2, curRange=1;
 let autoRefreshTimer = null;
 
 // ── HELPERS ──────────────────────────────────────────────
@@ -388,8 +397,6 @@ async function loadBookings(){
     if(json.status !== 'ok') throw new Error('API error');
 
     // Chuyển đổi từ Google Sheets sang format BK
-    // Debug: log raw date/time từ API để kiểm tra format
-    if(json.data.length > 0) console.log('[DEBUG] raw date:', json.data[0].date, '| raw time:', json.data[0].time, '| price:', json.data[0].price);
     BK = json.data.map((r, i) => ({
       id:       i + 1,
       rowIndex: r.rowIndex || (i + 2),
@@ -421,9 +428,8 @@ async function loadBookings(){
       createdAt: r.createdAt || ''
     }));
 
-    // Debug: kiểm tra date sau parse
-    console.log('[DEBUG] TS =', TS);
-    BK.forEach(b => console.log('[DEBUG] booking:', b.name, '| date:', b.date, '| match:', b.date===TS, '| st:', b.st, '| price:', b.price));
+    loadedMonths = 2; // mặc định fetch 2 tháng
+    curRange = 1;     // reset về Tháng này khi refresh
     renderBookings();
     updateStats();
     revDone = false; // reset để re-render doanh thu
@@ -563,10 +569,70 @@ function canc(id){
 }
 function flt(f,btn){curFlt=f;document.querySelectorAll('.ft').forEach(x=>x.classList.remove('on'));btn.classList.add('on');renderBookings();}
 
+// ── REVENUE RANGE ────────────────────────────────────────
+let curRange = 1;   // số tháng đang hiển thị (1,3,6,12)
+
+async function setRange(months, btn){
+  if(months === curRange) return;
+  curRange = months;
+  document.querySelectorAll('.rng-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+
+  // Nếu data hiện tại đủ (months <= số tháng đã fetch) thì không fetch lại
+  if(months <= loadedMonths){
+    revDone = false;
+    initRevenue();
+    return;
+  }
+
+  // Cần fetch thêm data
+  const p2 = document.getElementById('p2');
+  const oldContent = p2.innerHTML;
+  // Hiện loading overlay trên phần stats
+  document.getElementById('r1').textContent = '...';
+  document.getElementById('r2').textContent = '...';
+  document.getElementById('r3').textContent = '...';
+  document.getElementById('r4').textContent = '...';
+
+  try {
+    const res  = await fetch(API_URL + '?shopId=' + SHOP_ID + '&months=' + months);
+    const json = await res.json();
+    if(json.status === 'ok'){
+      loadedMonths = months;
+      BK = json.data.map((r, i) => ({
+        id:       i + 1,
+        rowIndex: r.rowIndex || (i + 2),
+        name:     r.customerName  || '',
+        phone:    String(r.customerPhone || ''),
+        svc:      r.service       || '',
+        dur:      Number(r.duration) || 60,
+        price:    Number(r.price) || 0,
+        date:     dateStr(r.date) || r.date || '',
+        time:     parseTime(r.time),
+        note:     r.note || '',
+        st:       r.status === 'Đã xác nhận' ? 'confirmed'
+                : r.status === 'Đã huỷ'     ? 'cancelled'
+                : 'pending',
+        createdAt: r.createdAt || ''
+      }));
+      revDone = false;
+      initRevenue();
+      updateStats();
+    }
+  } catch(err){
+    toast('❌ Không tải được dữ liệu');
+  }
+}
+
 // ── REVENUE ───────────────────────────────────────────────
 function initRevenue(){
-  const conf=BK.filter(b=>b.st==='confirmed');
   const now=new Date();
+  // Tính cutoff theo curRange (số tháng)
+  const cutoff=new Date(now.getFullYear(), now.getMonth()-(curRange-1), 1);
+  const cutoffStr=cutoff.getFullYear()+'-'+String(cutoff.getMonth()+1).padStart(2,'0')+'-01';
+  const conf=BK.filter(b=>b.st==='confirmed' && b.date>=cutoffStr);
+  const allConf=BK.filter(b=>b.st==='confirmed'); // để tính avg toàn bộ
+
   const todayRev=conf.filter(b=>b.date===TS).reduce((s,b)=>s+b.price,0);
   const todayCnt=conf.filter(b=>b.date===TS).length;
   const wkStart=new Date(now);wkStart.setDate(now.getDate()-now.getDay());
@@ -576,13 +642,20 @@ function initRevenue(){
   const mPfx=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   const mConf=conf.filter(b=>b.date.startsWith(mPfx));
   const mRev=mConf.reduce((s,b)=>s+b.price,0);
-  const avg=conf.length?Math.round(conf.reduce((s,b)=>s+b.price,0)/conf.length):0;
+  const rangeRev=conf.reduce((s,b)=>s+b.price,0);
+  const avg=conf.length?Math.round(rangeRev/conf.length):0;
+
+  // Label thay đổi theo range
+  const r3lbl={1:'Tháng này',3:'3 tháng',6:'6 tháng',12:'Cả năm'}[curRange]||'Tháng này';
+  document.querySelector('[for="r3lbl"]') && (document.querySelector('[for="r3lbl"]').textContent=r3lbl.toUpperCase());
+  const r3el=document.getElementById('r3lbl'); if(r3el) r3el.textContent=r3lbl.toUpperCase();
+
   document.getElementById('r1').textContent=fmt(todayRev)+'đ';
   document.getElementById('r1s').textContent=todayCnt+' lịch hẹn';
   document.getElementById('r2').textContent=fmt(wkRev)+'đ';
   document.getElementById('r2s').textContent=wkConf.length+' lịch hẹn';
-  document.getElementById('r3').textContent=fmt(mRev)+'đ';
-  document.getElementById('r3s').textContent=mConf.length+' lịch hẹn';
+  document.getElementById('r3').textContent=fmt(curRange===1?mRev:rangeRev)+'đ';
+  document.getElementById('r3s').textContent=(curRange===1?mConf.length:conf.length)+' lịch hẹn';
   document.getElementById('r4').textContent=fmt(avg)+'đ';
   document.getElementById('r4s').textContent='từ '+conf.length+' lịch';
   const total=BK.length;
@@ -606,10 +679,14 @@ function drawChart(period,btn){
       cols.push({lbl:DAYS[d.getDay()],rev,hi:dstr===TS});
     }
   } else {
-    for(let i=5;i>=0;i--){
+    // Số tháng hiển thị theo curRange, tối đa 12
+    const nMonths = Math.min(curRange, 12);
+    for(let i=nMonths-1;i>=0;i--){
       const d=new Date(T);d.setMonth(T.getMonth()-i);
+      const cutoff2=new Date(T.getFullYear(),T.getMonth()-(curRange-1),1);
+      const cutStr2=cutoff2.getFullYear()+'-'+String(cutoff2.getMonth()+1).padStart(2,'0')+'-01';
       const mPfx=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-      const rev=conf.filter(b=>b.date.startsWith(mPfx)).reduce((s,b)=>s+b.price,0);
+      const rev=conf.filter(b=>b.date>=cutStr2&&b.date.startsWith(mPfx)).reduce((s,b)=>s+b.price,0);
       cols.push({lbl:'T'+(d.getMonth()+1),rev,hi:i===0});
     }
   }
