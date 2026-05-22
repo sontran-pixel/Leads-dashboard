@@ -305,27 +305,43 @@ let autoRefreshTimer = null;
 function fmt(n){if(n>=1000000)return(n/1000000).toFixed(1).replace('.0','')+'tr';return Math.round(n/1000)+'k'}
 function fmtF(n){return n.toLocaleString('vi-VN')+'đ'}
 
-// Fix: xử lý nhiều format ngày từ Google Sheets
+// Fix: xu ly TAT CA format ngay tu Google Sheets
+// "Fri May 22"        -> tach tay, them nam hien tai
+// "Fri May 22 2026"   -> tach tay
+// "2026-05-22"        -> ISO standard
+// "22/05/2026"        -> DD/MM/YYYY
+// 46198               -> serial number
+const _MONTHS={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
 function parseDate(d){
   if(!d) return null;
   const s = String(d).trim();
-  // Format ISO: 2026-05-22
+  // ISO YYYY-MM-DD
   if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s.slice(0,10)+'T00:00');
-  // Format DD/MM/YYYY
+  // DD/MM/YYYY
   if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)){
     const [dd,mm,yyyy]=s.split('/');
-    return new Date(`${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}T00:00`);
+    return new Date(yyyy+'-'+mm.padStart(2,'0')+'-'+dd.padStart(2,'0')+'T00:00');
   }
-  // Format Google Sheets serial number (số nguyên)
+  // Serial number
   if(/^\d+$/.test(s)){
-    const serial = parseInt(s);
-    const base = new Date(1899,11,30);
-    base.setDate(base.getDate()+serial);
+    const base=new Date(1899,11,30);
+    base.setDate(base.getDate()+parseInt(s));
     return base;
   }
-  // Fallback
-  const dt = new Date(s);
-  return isNaN(dt.getTime()) ? null : dt;
+  // "Fri May 22" hoac "Fri May 22 2026" hoac "May 22 2026"
+  // Tach tung phan, khong dung new Date() vi se parse sai nam
+  const parts = s.split(/\s+/);
+  let day=null, month=null, year=null;
+  parts.forEach(p => {
+    if(_MONTHS[p])   month = _MONTHS[p];
+    else if(/^\d{4}$/.test(p)) year = parseInt(p);
+    else if(/^\d{1,2}$/.test(p)) day = parseInt(p);
+  });
+  if(day && month){
+    if(!year) year = new Date().getFullYear();
+    return new Date(year, month-1, day);
+  }
+  return null;
 }
 
 function fmtD(d){
@@ -340,26 +356,20 @@ function dateStr(d){
   return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
 }
 
-// Fix: parse time field tu Google Sheets
-// Sheets time cell khi String() ra: "Sat Dec 30 1899 16:00:00 GMT+0700"
-// hoac ISO "1899-12-30T09:00:00.000Z" — phai dung getHours() LOCAL, khong dung UTC
+// Fix: parse time tu Google Sheets
+// "Sat Dec 30 1899 09:00:00 GMT+0706 (Giờ Đông Dương)" -> "09:00"
+// "16:00" -> "16:00"
 function parseTime(t){
   if(!t) return '';
   const s = String(t).trim();
-  // Da la HH:MM hoac HH:MM:SS
-  if(/^\d{1,2}:\d{2}/.test(s)) return s.slice(0,5);
-  // Dang "Sat Dec 30 1899 16:00:00 GMT+0700..." hoac ISO timestamp
-  if(s.includes(':') || s.includes('T')){
-    try {
-      const dt = new Date(s);
-      if(!isNaN(dt.getTime())){
-        // Dung getHours() LOCAL (UTC+7) — Sheets luu gio local
-        const hh = String(dt.getHours()).padStart(2,'0');
-        const mm = String(dt.getMinutes()).padStart(2,'0');
-        return hh+':'+mm;
-      }
-    } catch(e){}
-  }
+  // Da la HH:MM
+  if(/^\d{1,2}:\d{2}$/.test(s)) return s.padStart(5,'0').slice(0,5);
+  // Trich HH:MM truoc chu "GMT" - day la gio local dung trong chuoi toString()
+  const m = s.match(/(\d{1,2}):(\d{2}):\d{2}\s+GMT/);
+  if(m) return m[1].padStart(2,'0')+':'+m[2];
+  // Fallback: bat ky HH:MM:SS
+  const m2 = s.match(/(\d{1,2}):(\d{2})/);
+  if(m2) return m2[1].padStart(2,'0')+':'+m2[2];
   return s;
 }
 
@@ -378,16 +388,31 @@ async function loadBookings(){
     if(json.status !== 'ok') throw new Error('API error');
 
     // Chuyển đổi từ Google Sheets sang format BK
+    // Debug: log raw date/time từ API để kiểm tra format
+    if(json.data.length > 0) console.log('[DEBUG] raw date:', json.data[0].date, '| raw time:', json.data[0].time, '| price:', json.data[0].price);
     BK = json.data.map((r, i) => ({
       id:       i + 1,
-      rowIndex: i + 2,
+      rowIndex: r.rowIndex || (i + 2),
       shopId:   r.shopId,
       name:     r.customerName,
       phone:    r.customerPhone,
       svc:      r.service,
       dur:      60,
-      price:    parseInt(r.price) || 0,
-      date:     dateStr(r.date),
+      price:    (()=>{ const p=String(r.price||0).replace(/[.,]/g,''); const n=parseInt(p); return isNaN(n)?0:n; })(),
+      date:     (()=>{
+        // Thu tu: dateStr chuyen ve YYYY-MM-DD, neu that bai thu parse truc tiep
+        let d = dateStr(r.date);
+        if(!d && r.date){
+          // Thu new Date() direct va lay local date
+          try {
+            const dt = new Date(r.date);
+            if(!isNaN(dt)){
+              d = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+            }
+          } catch(e){}
+        }
+        return d;
+      })(),
       time:     parseTime(r.time),
       note:     r.note || '',
       st:       r.status === 'Đã xác nhận' ? 'confirmed'
@@ -396,6 +421,9 @@ async function loadBookings(){
       createdAt: r.createdAt || ''
     }));
 
+    // Debug: kiểm tra date sau parse
+    console.log('[DEBUG] TS =', TS);
+    BK.forEach(b => console.log('[DEBUG] booking:', b.name, '| date:', b.date, '| match:', b.date===TS, '| st:', b.st, '| price:', b.price));
     renderBookings();
     updateStats();
     revDone = false; // reset để re-render doanh thu
