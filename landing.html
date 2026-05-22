@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BookEasy – Hệ thống đặt lịch tự động cho Spa & Salon</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p1:#7B2FFF;--p2:#4F46E5;--p3:#0EA5E9;
+  --gold:#F5C842;--goldl:#FFF8DC;
+  --ink:#0A0612;--muted:rgba(255,255,255,.55);
+  --card:rgba(255,255,255,.07);--cardb:rgba(255,255,255,.13);
+  --r:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Be Vietnam Pro',sans-serif;
+  background:#080512;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* ── BG MESH ── */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(123,47,255,.35) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(14,165,233,.25) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 50% 80%, rgba(79,70,229,.3) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 90% 90%, rgba(123,47,255,.2) 0%, transparent 50%);
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+.bg-stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s)}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(1)}50%{opacity:.7;transform:scale(1.3)}}
+
+/* ── WRAPPER ── */
+.wrap{position:relative;z-index:1;max-width:430px;margin:0 auto;padding:0 20px}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,5,18,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:100%;
+}
+.nav-logo{display:flex;align-items:center;gap:8px}
+.nav-icon{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-name{font-size:15px;font-weight:700;letter-spacing:.3px}
+.nav-cta{padding:7px 16px;background:linear-gradient(135deg,var(--p1),var(--p3));border:none;border-radius:30px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;letter-spacing:.3px}
+
+/* ── HERO ── */
+.hero{padding:48px 0 40px;text-align:center}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:30px;
+  background:rgba(123,47,255,.2);border:1px solid rgba(123,47,255,.4);
+  font-size:11px;font-weight:600;color:#C4B5FD;
+  letter-spacing:.5px;text-transform:uppercase;
+  margin-bottom:20px;
+  animation:fadeUp .6s ease both;
+}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--p1);animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:38px;font-weight:900;line-height:1.15;
+  margin-bottom:16px;
+  animation:fadeUp .7s ease .1s both;
+}
+h1 .hi{
+  background:linear-gradient(135deg,#C4B5FD,var(--p3),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:15px;color:var(--muted);line-height:1.7;
+  margin-bottom:32px;
+  animation:fadeUp .7s ease .2s both;
+}
+.hero-sub b{color:#fff;font-weight:600}
+
+.hero-btns{
+  display:flex;flex-direction:column;gap:10px;
+  animation:fadeUp .7s ease .3s both;
+}
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 24px;border-radius:14px;
+  background:linear-gradient(135deg,var(--p1),var(--p3));
+  color:#fff;font-size:15px;font-weight:700;
+  text-decoration:none;border:none;cursor:pointer;
+  font-family:'Be Vietnam Pro',sans-serif;
+  box-shadow:0 8px 32px rgba(123,47,255,.4);
+  transition:transform .15s,box-shadow .15s;
+  letter-spacing:.2px;
+}
+.btn-primary:active{transform:scale(.97);box-shadow:0 4px 16px rgba(123,47,255,.3)}
+.btn-secondary{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:15px 24px;border-radius:14px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-size:15px;font-weight:600;
+  text-decoration:none;
+  transition:background .15s;
+}
+.btn-secondary:active{background:rgba(255,255,255,.12)}
+
+/* ── STATS ── */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  padding:24px 0;
+  animation:fadeUp .7s ease .4s both;
+}
+.stat{
+  background:var(--card);border:1px solid var(--cardb);
+  border-radius:14px;padding:14px 10px;text-align:center;
+}
+.stat-n{font-size:22px;font-weight:700;background:linear-gradient(135deg,#C4B5FD,var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+
+/* ── SECTION ── */
+.sec{padding:32px 0}
+.sec-tag{
+  display:inline-block;padding:4px 12px;border-radius:20px;
+  background:rgba(123,47,255,.15);border:1px solid rgba(123,47,255,.3);
+  font-size:11px;font-weight:600;color:#C4B5FD;
+  letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;
+}
+.sec-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1.3;margin-bottom:8px}
+.sec-title .hi{background:linear-gradient(135deg,#C4B5FD,var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+
+/* ── PAIN POINTS ── */
+.pain-list{display:flex;flex-direction:column;gap:10px}
+.pain{
+  display:flex;align-items:flex-start;gap:12px;
+  background:rgba(229,72,77,.08);border:1px solid rgba(229,72,77,.2);
+  border-radius:13px;padding:14px;
+}
+.pain-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.pain-text{font-size:14px;color:rgba(255,255,255,.8);line-height:1.6}
+.pain-text b{color:#fff}
+
+/* ── FEATURES ── */
+.feat-list{display:flex;flex-direction:column;gap:10px}
+.feat{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--card);border:1px solid var(--cardb);
+  border-radius:14px;padding:16px;
+  transition:background .2s;
+}
+.feat:active{background:rgba(255,255,255,.1)}
+.feat-ico{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.feat-ico.p{background:linear-gradient(135deg,rgba(123,47,255,.3),rgba(79,70,229,.3))}
+.feat-ico.b{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(6,182,212,.3))}
+.feat-ico.g{background:linear-gradient(135deg,rgba(16,185,129,.3),rgba(5,150,105,.3))}
+.feat-ico.a{background:linear-gradient(135deg,rgba(245,200,66,.3),rgba(217,119,6,.3))}
+.feat-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ── HOW IT WORKS ── */
+.steps-list{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:14px;padding:16px 0;position:relative}
+.step:not(:last-child)::after{
+  content:'';position:absolute;left:19px;top:52px;bottom:0;
+  width:2px;background:linear-gradient(to bottom,rgba(123,47,255,.4),transparent);
+}
+.step-num{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--p1),var(--p2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;
+  box-shadow:0 4px 16px rgba(123,47,255,.4);
+  position:relative;z-index:1;
+}
+.step-title{font-size:15px;font-weight:600;margin-bottom:4px;margin-top:8px}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ── PRICING ── */
+.price-card{
+  background:linear-gradient(135deg,rgba(123,47,255,.15),rgba(14,165,233,.1));
+  border:1px solid rgba(123,47,255,.3);
+  border-radius:20px;padding:24px;margin-bottom:12px;position:relative;overflow:hidden;
+}
+.price-card::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(123,47,255,.2),transparent 70%);
+}
+.price-badge{
+  display:inline-block;padding:4px 12px;border-radius:20px;
+  background:linear-gradient(135deg,var(--p1),var(--p3));
+  font-size:11px;font-weight:700;letter-spacing:.5px;
+  margin-bottom:14px;
+}
+.price-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.price-amount{font-size:36px;font-weight:900;font-family:'Playfair Display',serif;background:linear-gradient(135deg,#C4B5FD,var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.price-per{font-size:13px;color:var(--muted);margin-bottom:16px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:8px}
+.price-features li{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.8)}
+.price-features li::before{content:'✓';color:#10B981;font-weight:700;font-size:14px;flex-shrink:0}
+
+.price-card.hot{
+  background:linear-gradient(135deg,rgba(245,200,66,.12),rgba(217,119,6,.08));
+  border-color:rgba(245,200,66,.3);
+}
+.price-card.hot .price-amount{background:linear-gradient(135deg,var(--gold),#F97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── TESTIMONIAL ── */
+.testi{
+  background:var(--card);border:1px solid var(--cardb);
+  border-radius:16px;padding:18px;margin-bottom:10px;
+}
+.testi-text{font-size:14px;color:rgba(255,255,255,.85);line-height:1.7;font-style:italic;margin-bottom:12px}
+.testi-text::before{content:'"';font-family:'Playfair Display',serif;font-size:28px;color:var(--p1);line-height:0;vertical-align:-10px;margin-right:4px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:600}
+.testi-role{font-size:11px;color:var(--muted)}
+.stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+
+/* ── CTA FINAL ── */
+.cta-final{
+  background:linear-gradient(135deg,rgba(123,47,255,.2),rgba(14,165,233,.15));
+  border:1px solid rgba(123,47,255,.25);
+  border-radius:24px;padding:32px 20px;text-align:center;margin:16px 0 40px;
+}
+.cta-final h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:10px;line-height:1.3}
+.cta-final p{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.7}
+.cta-final .limited{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);
+  border-radius:30px;padding:5px 14px;
+  font-size:12px;font-weight:600;color:var(--gold);
+  margin-bottom:20px;
+}
+
+/* ── FLOAT BUTTONS ── */
+.float-btns{
+  position:fixed;bottom:24px;right:16px;z-index:200;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;
+}
+.float-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-radius:50px;
+  font-size:13px;font-weight:600;
+  text-decoration:none;color:#fff;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  transition:transform .15s,box-shadow .15s;
+  white-space:nowrap;
+}
+.float-btn:active{transform:scale(.95)}
+.float-btn.fb{background:linear-gradient(135deg,#1877F2,#0C5FD8);box-shadow:0 4px 20px rgba(24,119,242,.4)}
+.float-btn.ph{background:linear-gradient(135deg,#25D366,#128C7E);box-shadow:0 4px 20px rgba(37,211,102,.4)}
+.float-ico{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;padding:24px 20px;
+  border-top:1px solid rgba(255,255,255,.07);
+  font-size:12px;color:rgba(255,255,255,.3);
+  line-height:1.8;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-stars" id="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon">📅</div>
+    <span class="nav-name">BookEasy</span>
+  </div>
+  <a href="https://m.me/son.banhangtudong247" target="_blank" class="nav-cta">Tư vấn miễn phí</a>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge"><span class="dot"></span>Giải pháp #1 cho Spa & Salon</div>
+    <h1>Đặt lịch tự động —<br><span class="hi">Khách đến đều đặn</span></h1>
+    <p class="hero-sub">
+      Không cần nhân viên trực inbox.<br>
+      Không lo khách quên lịch.<br>
+      <b>Tiệm bạn mở — hệ thống tự chạy 24/7.</b>
+    </p>
+    <div class="hero-btns">
+      <a href="https://m.me/son.banhangtudong247" target="_blank" class="btn-primary">
+        💬 Nhắn Sơn tư vấn miễn phí
+      </a>
+      <a href="tel:0932742856" class="btn-secondary">
+        📞 Gọi ngay: 0932 742 856
+      </a>
+    </div>
+  </div>
+
+  <div class="stats reveal">
+    <div class="stat"><div class="stat-n">24/7</div><div class="stat-l">Hoạt động</div></div>
+    <div class="stat"><div class="stat-n">5'</div><div class="stat-l">Cài đặt xong</div></div>
+    <div class="stat"><div class="stat-n">0đ</div><div class="stat-l">Phí setup</div></div>
+  </div>
+
+  <!-- PAIN -->
+  <div class="sec reveal">
+    <div class="sec-tag">Vấn đề thực tế</div>
+    <div class="sec-title">Tiệm bạn đang <span class="hi">mất khách</span> mỗi ngày?</div>
+    <p class="sec-sub">Những tình huống quen thuộc mà chủ tiệm nào cũng gặp:</p>
+    <div class="pain-list">
+      <div class="pain"><div class="pain-ico">😤</div><div class="pain-text"><b>Khách nhắn tin không ai trả lời kịp</b> — họ đặt chỗ khác ngay lập tức</div></div>
+      <div class="pain"><div class="pain-ico">🤦</div><div class="pain-text"><b>Khách đặt lịch rồi bùng</b> — slot trống lãng phí, nhân viên ngồi chờ</div></div>
+      <div class="pain"><div class="pain-ico">😩</div><div class="pain-text"><b>Trực inbox 24/7 quá mệt</b> — vừa làm dịch vụ vừa phải lo tin nhắn</div></div>
+      <div class="pain"><div class="pain-ico">📉</div><div class="pain-text"><b>Chạy quảng cáo tốn tiền</b> nhưng không có hệ thống chốt lịch tự động</div></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="sec reveal">
+    <div class="sec-tag">Giải pháp BookEasy</div>
+    <div class="sec-title">Hệ thống làm việc <span class="hi">thay bạn</span></div>
+    <p class="sec-sub">Một lần cài đặt — mọi thứ tự động vận hành</p>
+    <div class="feat-list">
+      <div class="feat">
+        <div class="feat-ico p">📲</div>
+        <div><div class="feat-title">Trang đặt lịch riêng cho tiệm</div><div class="feat-desc">Gắn thẳng vào Facebook Page — khách bấm đặt lịch ngay, không cần nhắn tin hỏi</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico b">🔔</div>
+        <div><div class="feat-title">Thông báo lịch mới tức thì</div><div class="feat-desc">Mỗi khi có lịch đặt, bạn nhận email ngay lập tức — không bỏ sót khách nào</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico g">📊</div>
+        <div><div class="feat-title">Dashboard theo dõi doanh thu</div><div class="feat-desc">Xem lịch hẹn, doanh thu theo ngày/tuần/tháng — ngay trên điện thoại</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico a">⚡</div>
+        <div><div class="feat-title">Xác nhận & quản lý 1 chạm</div><div class="feat-desc">Xác nhận, huỷ lịch, ghi chú khách hàng — tất cả trong 1 màn hình đơn giản</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="sec reveal">
+    <div class="sec-tag">Quy trình</div>
+    <div class="sec-title">Bắt đầu chỉ trong <span class="hi">5 phút</span></div>
+    <div class="steps-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div><div class="step-title">Sơn setup hệ thống cho tiệm</div><div class="step-desc">Cung cấp tên tiệm, dịch vụ, giờ làm việc — Sơn cài đặt toàn bộ miễn phí</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div><div class="step-title">Gắn link đặt lịch vào Facebook</div><div class="step-desc">1 link duy nhất — gắn vào nút "Đặt lịch" trên Page, Story, hay bio</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div><div class="step-title">Khách tự đặt, bạn tự nhận</div><div class="step-desc">Khách chọn dịch vụ, ngày giờ → hệ thống ghi lịch → bạn nhận thông báo ngay</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div><div class="step-title">Quản lý mọi thứ trên điện thoại</div><div class="step-desc">Xem lịch hẹn, doanh thu, xác nhận — không cần ngồi máy tính</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="sec reveal">
+    <div class="sec-tag">Bảng giá</div>
+    <div class="sec-title">Đầu tư <span class="hi">1 lần</span> — dùng mãi mãi</div>
+    <p class="sec-sub">Không phí tháng. Không ẩn phí. Không phụ thuộc nhà cung cấp.</p>
+
+    <div class="price-card hot">
+      <div class="price-badge">⭐ PHỔ BIẾN NHẤT</div>
+      <div class="price-name">Gói Tiêu Chuẩn</div>
+      <div class="price-amount">299k</div>
+      <div class="price-per">/ tháng · Huỷ bất cứ lúc nào</div>
+      <ul class="price-features">
+        <li>Trang đặt lịch riêng cho tiệm</li>
+        <li>Dashboard quản lý lịch hẹn</li>
+        <li>Email thông báo tức thì</li>
+        <li>Hỗ trợ setup & onboarding</li>
+        <li>Hỗ trợ kỹ thuật qua Zalo/FB</li>
+      </ul>
+    </div>
+
+    <div class="price-card">
+      <div class="price-badge" style="background:linear-gradient(135deg,#7C6EF5,#534AB7)">💎 TRỌN GÓI</div>
+      <div class="price-name">Gói VIP – Sở Hữu Vĩnh Viễn</div>
+      <div class="price-amount">2.9tr</div>
+      <div class="price-per">/ 1 lần duy nhất · Không phí tháng</div>
+      <ul class="price-features">
+        <li>Tất cả tính năng Tiêu Chuẩn</li>
+        <li>Sở hữu vĩnh viễn, không tái tục</li>
+        <li>Setup tận nơi (Biên Hòa & HCM)</li>
+        <li>6 tháng hỗ trợ kỹ thuật ưu tiên</li>
+        <li>Tích hợp Facebook Page chuyên sâu</li>
+        <li>Thiết kế màu sắc theo thương hiệu</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="sec reveal">
+    <div class="sec-tag">Khách hàng nói gì</div>
+    <div class="sec-title">Tin từ <span class="hi">chủ tiệm thực tế</span></div>
+    <div class="testi">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">Từ khi dùng BookEasy, inbox tôi giảm hẳn mà khách vẫn đặt lịch đều. Nhân viên tập trung làm dịch vụ, không phải ngồi trả lời tin nhắn nữa.</p>
+      <div class="testi-author"><div class="testi-av">💆</div><div><div class="testi-name">Chị Quỳnh</div><div class="testi-role">Quỳnh Spa · Biên Hòa, Đồng Nai</div></div></div>
+    </div>
+    <div class="testi">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">Setup chỉ mất buổi sáng, chiều đã có khách đặt lịch qua link rồi. Anh Sơn hỗ trợ rất nhiệt tình, có gì nhắn là giải quyết ngay.</p>
+      <div class="testi-author"><div class="testi-av">✂️</div><div><div class="testi-name">Anh Minh</div><div class="testi-role">Salon Tóc · Quận 3, TP.HCM</div></div></div>
+    </div>
+  </div>
+
+  <!-- CTA FINAL -->
+  <div class="cta-final reveal">
+    <div class="limited">🔥 Chỉ còn 3 suất tháng này</div>
+    <h2>Sẵn sàng để tiệm<br><span style="background:linear-gradient(135deg,#C4B5FD,var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">tự động vận hành?</span></h2>
+    <p>Sơn phân tích hệ thống miễn phí cho tiệm của bạn.<br>Không cam kết. Không áp lực.</p>
+    <a href="https://m.me/son.banhangtudong247" target="_blank" class="btn-primary" style="margin-bottom:10px">
+      💬 Nhắn Sơn ngay — Miễn phí
+    </a>
+    <a href="tel:0932742856" class="btn-secondary">
+      📞 0932 742 856
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong style="color:rgba(255,255,255,.6)">BookEasy</strong> · by Trần Thanh Sơn<br>
+  BanHangTuDong247.vn · 0932 742 856<br>
+  <span style="margin-top:4px;display:block">Biên Hòa, Đồng Nai & TP.HCM</span>
+</footer>
+
+<!-- FLOAT BUTTONS -->
+<div class="float-btns">
+  <a href="https://m.me/son.banhangtudong247" target="_blank" class="float-btn fb">
+    <div class="float-ico">💬</div> Messenger
+  </a>
+  <a href="tel:0932742856" class="float-btn ph">
+    <div class="float-ico">📞</div> Gọi ngay
+  </a>
+</div>
+
+<script>
+// Stars
+const sw = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*2.5+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*4}s`;
+  sw.appendChild(s);
+}
+
+// Scroll reveal
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target)}});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
