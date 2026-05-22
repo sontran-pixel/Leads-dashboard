@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Dashboard – Quỳnh Spa</title>
+<title>Dashboard – Spa Hoa Lan</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--sc:#C8693A;--sl:#FDF0E8;--ink:#0F0D1A;--bg:#F6F4F1;--card:#fff;--muted:#7A7468;--border:#EDE9E2;--teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;--red:#E5484D;--rl:#FFECEC;--amber:#D4850A;--al:#FFF4DE;}
@@ -174,7 +174,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
   <div class="topbar">
     <div class="tb-l">
       <div class="tb-av">🌿</div>
-      <div><div class="tb-name">Quỳnh Spa</div><div class="tb-sub">F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Thành phố Đồng Nai</div></div>
+      <div><div class="tb-name">Spa Hoa Lan</div><div class="tb-sub">Q.1 · TP.HCM</div></div>
     </div>
     <button class="out-btn" onclick="exitApp()">Đăng xuất</button>
   </div>
@@ -184,16 +184,16 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
     <!-- PAGE 1: LỊCH HẸN -->
     <div class="page on" id="p1">
       <div class="sg">
-        <div class="sc2"><div class="sc2-lbl">Hôm nay</div><div class="sc2-val" id="s1" style="color:var(--sc)">3</div><div class="sc2-sub">lịch hẹn</div></div>
-        <div class="sc2"><div class="sc2-lbl">Chờ xác nhận</div><div class="sc2-val" id="s2" style="color:var(--amber)">2</div><div class="sc2-sub">cần duyệt</div></div>
-        <div class="sc2"><div class="sc2-lbl">Đã xác nhận</div><div class="sc2-val" id="s3" style="color:var(--teal)">5</div><div class="sc2-sub">tháng này</div></div>
-        <div class="sc2"><div class="sc2-lbl">Doanh thu hôm nay</div><div class="sc2-val" id="s4" style="color:var(--teal);font-size:18px">350k</div><div class="sc2-sub">đã xác nhận</div></div>
+        <div class="sc2"><div class="sc2-lbl">Hôm nay</div><div class="sc2-val" id="s1" style="color:var(--sc)">0</div><div class="sc2-sub">lịch hẹn</div></div>
+        <div class="sc2"><div class="sc2-lbl">Chờ xác nhận</div><div class="sc2-val" id="s2" style="color:var(--amber)">0</div><div class="sc2-sub">cần duyệt</div></div>
+        <div class="sc2"><div class="sc2-lbl">Đã xác nhận</div><div class="sc2-val" id="s3" style="color:var(--teal)">0</div><div class="sc2-sub">tháng này</div></div>
+        <div class="sc2"><div class="sc2-lbl">Doanh thu hôm nay</div><div class="sc2-val" id="s4" style="color:var(--teal);font-size:18px">0kđ</div><div class="sc2-sub">đã xác nhận</div></div>
       </div>
       <div class="fr">
         <button class="ft on" onclick="flt('all',this)">Tất cả</button>
         <button class="ft" onclick="flt('today',this)">Hôm nay</button>
         <button class="ft" onclick="flt('pending',this)">Chờ duyệt</button>
-        <button class="ft" onclick="flt('confirmed',this)">Đã xác nhận</button>
+        <button class="ft" onclick="flt('confirmed',this)">Xác nhận</button>
         <button class="ft" onclick="flt('cancelled',this)">Đã huỷ</button>
       </div>
       <div id="blist"></div>
@@ -243,7 +243,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
     <div class="page" id="p3">
       <div class="sec-h">⚙️ Cài đặt</div>
       <div class="scard">
-        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">🌿</div>Thông tin shop</div><div class="sr-r">Quỳnh Spa →</div></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">🌿</div>Thông tin shop</div><div class="sr-r">Spa Hoa Lan →</div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📆</div>Google Calendar</div><div class="sr-r" style="color:var(--teal)">Đã kết nối ✓</div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--tl)">🔔</div>Thông báo Zalo</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--al)">📧</div>Email tự động</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
@@ -283,6 +283,16 @@ const T = new Date(), TS = T.toISOString().slice(0,10);
 function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.toISOString().slice(0,10)}
 const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
 
+// Shop configs để hiển thị đúng tên, emoji, địa chỉ
+const SHOP_CONFIGS = {
+  "quynhspa": {
+    shopName: "Quỳnh Spa",
+    shopEmoji: "🌸",
+    shopAddress: "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai"
+  }
+  // Thêm shop mới vào đây khi có khách hàng mới
+};
+
 // SHOP_ID được set khi đăng nhập
 let SHOP_ID = '';
 let BK = [];
@@ -292,10 +302,45 @@ let autoRefreshTimer = null;
 // ── HELPERS ──────────────────────────────────────────────
 function fmt(n){if(n>=1000000)return(n/1000000).toFixed(1).replace('.0','')+'tr';return Math.round(n/1000)+'k'}
 function fmtF(n){return n.toLocaleString('vi-VN')+'đ'}
-function fmtD(d){const dt=new Date(d+'T00:00');return DAYS[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1)}
+
+// Fix: xử lý nhiều format ngày từ Google Sheets
+function parseDate(d){
+  if(!d) return null;
+  const s = String(d).trim();
+  // Format ISO: 2026-05-22
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return new Date(s.slice(0,10)+'T00:00');
+  // Format DD/MM/YYYY
+  if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)){
+    const [dd,mm,yyyy]=s.split('/');
+    return new Date(`${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}T00:00`);
+  }
+  // Format Google Sheets serial number (số nguyên)
+  if(/^\d+$/.test(s)){
+    const serial = parseInt(s);
+    const base = new Date(1899,11,30);
+    base.setDate(base.getDate()+serial);
+    return base;
+  }
+  // Fallback
+  const dt = new Date(s);
+  return isNaN(dt.getTime()) ? null : dt;
+}
+
+function fmtD(d){
+  const dt = parseDate(d);
+  if(!dt) return '—';
+  return DAYS[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);
+}
+
+function dateStr(d){
+  const dt = parseDate(d);
+  if(!dt) return '';
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+}
+
 function toast(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
 function copyLink(){
-  const link = `https://yourdomain.com/booking-customer.html?shop=${SHOP_ID}`;
+  const link = `https://bookeasy-banhangtudong247.netlify.app/booking-customer.html?shop=${SHOP_ID}`;
   navigator.clipboard.writeText(link).then(()=>toast('✅ Đã copy link!')).catch(()=>toast(link));
 }
 
@@ -309,20 +354,20 @@ async function loadBookings(){
 
     // Chuyển đổi từ Google Sheets sang format BK
     BK = json.data.map((r, i) => ({
-      id:    i + 1,
-      rowIndex: i + 2, // row trong sheet (1-indexed, bỏ header)
-      shopId: r.shopId,
-      name:  r.customerName,
-      phone: r.customerPhone,
-      svc:   r.service,
-      dur:   60, // mặc định, có thể thêm cột duration sau
-      price: parseInt(r.price) || 0,
-      date:  r.date ? String(r.date).slice(0,10) : '',
-      time:  r.time || '',
-      note:  r.note || '',
-      st:    r.status === 'Đã xác nhận' ? 'confirmed'
-           : r.status === 'Đã huỷ'     ? 'cancelled'
-           : 'pending',
+      id:       i + 1,
+      rowIndex: i + 2,
+      shopId:   r.shopId,
+      name:     r.customerName,
+      phone:    r.customerPhone,
+      svc:      r.service,
+      dur:      60,
+      price:    parseInt(r.price) || 0,
+      date:     dateStr(r.date),
+      time:     r.time || '',
+      note:     r.note || '',
+      st:       r.status === 'Đã xác nhận' ? 'confirmed'
+              : r.status === 'Đã huỷ'     ? 'cancelled'
+              : 'pending',
       createdAt: r.createdAt || ''
     }));
 
@@ -365,8 +410,11 @@ function enterApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
 
-  // Hiển thị tên shop
-  document.querySelector('.tb-name').textContent = SHOP_ID;
+  // Hiển thị tên shop từ config nếu có, fallback về shopId
+  const shopCfg = SHOP_CONFIGS ? SHOP_CONFIGS[SHOP_ID] : null;
+  document.querySelector('.tb-name').textContent = shopCfg ? shopCfg.shopName : SHOP_ID;
+  document.querySelector('.tb-av').textContent   = shopCfg ? shopCfg.shopEmoji : '🏪';
+  document.querySelector('.tb-sub').textContent  = shopCfg ? shopCfg.shopAddress : '';
 
   // Load dữ liệu thật
   loadBookings();
