@@ -243,7 +243,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
     <div class="page" id="p3">
       <div class="sec-h">⚙️ Cài đặt</div>
       <div class="scard">
-        <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">🌿</div>Thông tin shop</div><div class="sr-r">Spa Hoa Lan →</div></div>
+        <div class="sr"><div class="sr-l"><div class="sr-ico" id="cfg-ico" style="background:var(--sl)">🌿</div>Thông tin shop</div><div class="sr-r" id="cfg-name">— →</div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📆</div>Google Calendar</div><div class="sr-r" style="color:var(--teal)">Đã kết nối ✓</div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--tl)">🔔</div>Thông báo Zalo</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--al)">📧</div>Email tự động</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
@@ -265,7 +265,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
       <span>📋<span class="nb-dot" id="nbd">2</span></span>
       <span>Lịch hẹn</span>
     </button>
-    <button class="nb" id="nb2" onclick="go('p2',this);initRevenue()">
+    <button class="nb" id="nb2" onclick="go('p2',this);revDone=false;initRevenue()">
       <span>📊</span><span>Doanh thu</span>
     </button>
     <button class="nb" id="nb3" onclick="go('p3',this)">
@@ -279,8 +279,10 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 <script>
 // ── CONFIG ────────────────────────────────────────────────
 const API_URL = 'https://script.google.com/macros/s/AKfycbxEQM2ND__mgHGnRvfsRm_DybcTo4zDO6lwhVQK6EtQB8AWDpwOffUvqtx55qklwOv-/exec';
-const T = new Date(), TS = T.toISOString().slice(0,10);
-function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.toISOString().slice(0,10)}
+const T = new Date();
+// Dùng ngày local (UTC+7) thay vì ISO UTC để tránh lệch ngày
+const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String(T.getDate()).padStart(2,'0');
+function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
 
 // Shop configs để hiển thị đúng tên, emoji, địa chỉ
@@ -338,6 +340,28 @@ function dateStr(d){
   return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
 }
 
+// Fix: parse time field - Google Sheets trả về ISO timestamp kiểu "1899-12-30T01:53:30.000Z"
+// hoặc string "HH:MM" bình thường
+function parseTime(t){
+  if(!t) return '';
+  const s = String(t).trim();
+  // Nếu đã là HH:MM hoặc HH:MM:SS → lấy HH:MM
+  if(/^\d{1,2}:\d{2}/.test(s)) return s.slice(0,5);
+  // Nếu là ISO timestamp (từ Google Sheets time cell)
+  if(s.includes('T')){
+    try {
+      const dt = new Date(s);
+      if(!isNaN(dt.getTime())){
+        // Lấy giờ phút theo UTC vì Sheets lưu UTC
+        const hh = String(dt.getUTCHours()).padStart(2,'0');
+        const mm = String(dt.getUTCMinutes()).padStart(2,'0');
+        return hh+':'+mm;
+      }
+    } catch(e){}
+  }
+  return s;
+}
+
 function toast(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
 function copyLink(){
   const link = `https://bookeasy-banhangtudong247.netlify.app/booking-customer.html?shop=${SHOP_ID}`;
@@ -363,7 +387,7 @@ async function loadBookings(){
       dur:      60,
       price:    parseInt(r.price) || 0,
       date:     dateStr(r.date),
-      time:     r.time || '',
+      time:     parseTime(r.time),
       note:     r.note || '',
       st:       r.status === 'Đã xác nhận' ? 'confirmed'
               : r.status === 'Đã huỷ'     ? 'cancelled'
@@ -374,6 +398,8 @@ async function loadBookings(){
     renderBookings();
     updateStats();
     revDone = false; // reset để re-render doanh thu
+    // Nếu đang ở tab doanh thu thì render luôn
+    if(document.getElementById('p2').classList.contains('on')) initRevenue();
   } catch(err) {
     document.getElementById('blist').innerHTML = '<div class="empty">❌ Không tải được dữ liệu. Kiểm tra kết nối!</div>';
     toast('❌ Lỗi tải dữ liệu');
@@ -412,9 +438,19 @@ function enterApp(){
 
   // Hiển thị tên shop từ config nếu có, fallback về shopId
   const shopCfg = SHOP_CONFIGS ? SHOP_CONFIGS[SHOP_ID] : null;
-  document.querySelector('.tb-name').textContent = shopCfg ? shopCfg.shopName : SHOP_ID;
-  document.querySelector('.tb-av').textContent   = shopCfg ? shopCfg.shopEmoji : '🏪';
-  document.querySelector('.tb-sub').textContent  = shopCfg ? shopCfg.shopAddress : '';
+  const displayName = shopCfg ? shopCfg.shopName : SHOP_ID;
+  const displayEmoji = shopCfg ? shopCfg.shopEmoji : '🏪';
+  const displayAddr = shopCfg ? shopCfg.shopAddress : '';
+
+  document.querySelector('.tb-name').textContent = displayName;
+  document.querySelector('.tb-av').textContent   = displayEmoji;
+  document.querySelector('.tb-sub').textContent  = displayAddr;
+
+  // Cập nhật settings page
+  const cfgName = document.getElementById('cfg-name');
+  const cfgIco  = document.getElementById('cfg-ico');
+  if(cfgName) cfgName.textContent = displayName + ' →';
+  if(cfgIco)  cfgIco.textContent  = displayEmoji;
 
   // Load dữ liệu thật
   loadBookings();
@@ -500,13 +536,12 @@ function flt(f,btn){curFlt=f;document.querySelectorAll('.ft').forEach(x=>x.class
 
 // ── REVENUE ───────────────────────────────────────────────
 function initRevenue(){
-  if(revDone)return;revDone=true;
   const conf=BK.filter(b=>b.st==='confirmed');
   const now=new Date();
   const todayRev=conf.filter(b=>b.date===TS).reduce((s,b)=>s+b.price,0);
   const todayCnt=conf.filter(b=>b.date===TS).length;
   const wkStart=new Date(now);wkStart.setDate(now.getDate()-now.getDay());
-  const wkS=wkStart.toISOString().slice(0,10);
+  const wkS=wkStart.getFullYear()+'-'+String(wkStart.getMonth()+1).padStart(2,'0')+'-'+String(wkStart.getDate()).padStart(2,'0');
   const wkConf=conf.filter(b=>b.date>=wkS);
   const wkRev=wkConf.reduce((s,b)=>s+b.price,0);
   const mPfx=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
@@ -537,7 +572,7 @@ function drawChart(period,btn){
   if(period==='week'){
     for(let i=6;i>=0;i--){
       const d=new Date(T);d.setDate(T.getDate()-i);
-      const dstr=d.toISOString().slice(0,10);
+      const dstr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
       const rev=conf.filter(b=>b.date===dstr).reduce((s,b)=>s+b.price,0);
       cols.push({lbl:DAYS[d.getDay()],rev,hi:dstr===TS});
     }
