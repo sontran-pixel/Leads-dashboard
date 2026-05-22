@@ -570,8 +570,6 @@ function canc(id){
 function flt(f,btn){curFlt=f;document.querySelectorAll('.ft').forEach(x=>x.classList.remove('on'));btn.classList.add('on');renderBookings();}
 
 // ── REVENUE RANGE ────────────────────────────────────────
-let curRange = 1;   // số tháng đang hiển thị (1,3,6,12)
-
 async function setRange(months, btn){
   if(months === curRange) return;
   curRange = months;
