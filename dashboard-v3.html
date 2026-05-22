@@ -340,21 +340,22 @@ function dateStr(d){
   return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
 }
 
-// Fix: parse time field - Google Sheets trả về ISO timestamp kiểu "1899-12-30T01:53:30.000Z"
-// hoặc string "HH:MM" bình thường
+// Fix: parse time field tu Google Sheets
+// Sheets time cell khi String() ra: "Sat Dec 30 1899 16:00:00 GMT+0700"
+// hoac ISO "1899-12-30T09:00:00.000Z" — phai dung getHours() LOCAL, khong dung UTC
 function parseTime(t){
   if(!t) return '';
   const s = String(t).trim();
-  // Nếu đã là HH:MM hoặc HH:MM:SS → lấy HH:MM
+  // Da la HH:MM hoac HH:MM:SS
   if(/^\d{1,2}:\d{2}/.test(s)) return s.slice(0,5);
-  // Nếu là ISO timestamp (từ Google Sheets time cell)
-  if(s.includes('T')){
+  // Dang "Sat Dec 30 1899 16:00:00 GMT+0700..." hoac ISO timestamp
+  if(s.includes(':') || s.includes('T')){
     try {
       const dt = new Date(s);
       if(!isNaN(dt.getTime())){
-        // Lấy giờ phút theo UTC vì Sheets lưu UTC
-        const hh = String(dt.getUTCHours()).padStart(2,'0');
-        const mm = String(dt.getUTCMinutes()).padStart(2,'0');
+        // Dung getHours() LOCAL (UTC+7) — Sheets luu gio local
+        const hh = String(dt.getHours()).padStart(2,'0');
+        const mm = String(dt.getMinutes()).padStart(2,'0');
         return hh+':'+mm;
       }
     } catch(e){}
