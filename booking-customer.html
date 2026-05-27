@@ -218,63 +218,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  CONFIG ĐỘNG — Toàn bộ thông tin shop lấy từ đây
-//  Khi deploy: load từ file JSON theo ?shop=shopId
-//  Hiện tại: nhúng thẳng SHOP_CONFIGS để chạy offline/demo
+//  CONFIG ĐỘNG — Load từ /shops/{shopId}.json trên GitHub
 // ════════════════════════════════════════════════════════════
-
-const SHOP_CONFIGS = {
-  "quynhspa": {
-  "shopId": "quynhspa",
-  "shopName": "Quỳnh Spa",
-  "shopEmoji": "🌸",
-  "shopAddress": "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai",
-  "color": "#E8477A",
-  "colorLight": "#FDE8EF",
-  "colorDark": "#B8305A",
-  "slots": [
-    "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
-    "13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"
-  ],
-  "blockedSlots": [],
-  "services": [
-    {
-      "name": "Gội Đầu Cơ Bản",
-      "duration": 20,
-      "price": 50000,
-      "icon": "💆"
-    },
-    {
-      "name": "Gội Đầu Thư Giãn",
-      "duration": 40,
-      "price": 79000,
-      "icon": "✨"
-    },
-    {
-      "name": "Gội Đầu Chuyên Sâu",
-      "duration": 60,
-      "price": 179000,
-      "icon": "👑"
-    }
-  ]
-},
-  "salon123": {
-    shopName: "Salon Tóc 123",
-    shopEmoji: "✂️",
-    shopAddress: "45 Lê Lợi, Q.3, TP.HCM",
-    color: "#7C6EF5",
-    colorLight: "#EEEDFE",
-    colorDark: "#534AB7",
-    slots: ["08:00","08:30","09:00","09:30","10:00","10:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"],
-    blockedSlots: ["09:00","14:00"],
-    services: [
-      { name: "Cắt tóc nữ",   duration:  45, price:  80000, icon: "✂️" },
-      { name: "Uốn tóc",      duration:  90, price: 350000, icon: "🌀" },
-      { name: "Nhuộm tóc",    duration: 120, price: 500000, icon: "🎨" },
-      { name: "Phục hồi tóc", duration:  60, price: 200000, icon: "💆" }
-    ]
-  }
-};
 
 // ════════════════════════════════════════════════════════════
 //  KHỞI ĐỘNG — Đọc ?shop= từ URL, load config
@@ -332,28 +277,24 @@ function renderServices(cfg){
 async function loadShop(){
   const shopId = getShopId();
 
-  // Giả lập loading nhẹ
-  await new Promise(r => setTimeout(r, 600));
-
-  // Thử load từ SHOP_CONFIGS (khi chưa có server)
-  // Khi deploy thật: fetch(`/shops/${shopId}.json`)
-  const cfg = shopId ? SHOP_CONFIGS[shopId] : null;
-
-  document.getElementById('loading').style.display = 'none';
-
-  if(!cfg){
-    // Nếu không có ?shop= → dùng shop đầu tiên để demo
-    // Bỏ dòng dưới nếu muốn bắt buộc phải có ?shop=
-    const fallback = Object.values(SHOP_CONFIGS)[0];
-    if(fallback && !shopId){
-      initApp(fallback);
-      return;
-    }
+  if(!shopId){
+    document.getElementById('loading').style.display = 'none';
     document.getElementById('error-screen').style.display = 'flex';
+    document.getElementById('error-msg').textContent = 'Link không hợp lệ. Vui lòng liên hệ chủ tiệm.';
     return;
   }
 
-  initApp(cfg);
+  try {
+    const res = await fetch(`/shops/${shopId}.json`);
+    if(!res.ok) throw new Error('not found');
+    const cfg = await res.json();
+    document.getElementById('loading').style.display = 'none';
+    initApp(cfg);
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error-screen').style.display = 'flex';
+    document.getElementById('error-msg').textContent = 'Không tìm thấy tiệm "' + shopId + '". Vui lòng kiểm tra lại link.';
+  }
 }
 
 function initApp(cfg){
@@ -623,7 +564,7 @@ function fetchBookedJsonp(shopId, date){
 // ════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS API
 // ════════════════════════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbxWj-GzrERnHWjl7Q9GaUhoUAlWv5WX-3Z4QKv-seHogtqNY1DLPyfUG3BDzb-sTdxO/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzVkxFSKmnP6tmyNHi1lb6z6xt-Yw-Gr-bCevM0cBaUMoKXdTGKgEpssk0phUj_qXBR/exec';
 
 // ════════════════════════════════════════════════════════════
 //  KHỞI CHẠY

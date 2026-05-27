@@ -294,15 +294,8 @@ const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String
 function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
 
-// Shop configs để hiển thị đúng tên, emoji, địa chỉ
-const SHOP_CONFIGS = {
-  "quynhspa": {
-    shopName: "Quỳnh Spa",
-    shopEmoji: "🌸",
-    shopAddress: "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai"
-  }
-  // Thêm shop mới vào đây khi có khách hàng mới
-};
+// Shop config — load động từ /shops/{shopId}.json
+let SHOP_CONFIG_CACHE = null;
 
 // SHOP_ID được set khi đăng nhập
 let SHOP_ID = '';
@@ -463,34 +456,38 @@ async function updateStatus(rowIndex, newStatus, displayName){
 }
 
 // ── LOGIN / LOGOUT ────────────────────────────────────────
-function enterApp(){
+async function enterApp(){
   const shopInput = document.getElementById('shop-id-input');
-  SHOP_ID = shopInput ? shopInput.value.trim() : 'hoalan';
+  SHOP_ID = shopInput ? shopInput.value.trim() : '';
   if(!SHOP_ID){ toast('Vui lòng nhập Shop ID!'); return; }
 
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
 
-  // Hiển thị tên shop từ config nếu có, fallback về shopId
-  const shopCfg = SHOP_CONFIGS ? SHOP_CONFIGS[SHOP_ID] : null;
-  const displayName = shopCfg ? shopCfg.shopName : SHOP_ID;
-  const displayEmoji = shopCfg ? shopCfg.shopEmoji : '🏪';
-  const displayAddr = shopCfg ? shopCfg.shopAddress : '';
+  // Load config từ /shops/{shopId}.json
+  let displayName  = SHOP_ID;
+  let displayEmoji = '🏪';
+  let displayAddr  = '';
+  try {
+    const res = await fetch(`/shops/${SHOP_ID}.json`);
+    if(res.ok){
+      SHOP_CONFIG_CACHE = await res.json();
+      displayName  = SHOP_CONFIG_CACHE.shopName    || SHOP_ID;
+      displayEmoji = SHOP_CONFIG_CACHE.shopEmoji   || '🏪';
+      displayAddr  = SHOP_CONFIG_CACHE.shopAddress || '';
+    }
+  } catch(e){ /* fallback về shopId */ }
 
   document.querySelector('.tb-name').textContent = displayName;
   document.querySelector('.tb-av').textContent   = displayEmoji;
   document.querySelector('.tb-sub').textContent  = displayAddr;
 
-  // Cập nhật settings page
   const cfgName = document.getElementById('cfg-name');
   const cfgIco  = document.getElementById('cfg-ico');
   if(cfgName) cfgName.textContent = displayName + ' →';
   if(cfgIco)  cfgIco.textContent  = displayEmoji;
 
-  // Load dữ liệu thật
   loadBookings();
-
-  // Tự động refresh mỗi 30 giây
   autoRefreshTimer = setInterval(loadBookings, 30000);
 }
 
