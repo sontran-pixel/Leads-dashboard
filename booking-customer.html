@@ -399,20 +399,63 @@ function pickDate(btn, d){
   buildSlots();
 }
 
-function buildSlots(){
+// Cache lịch đã book: { "2026-05-28": ["08:30","09:00",...] }
+const bookedCache = {};
+
+async function buildSlots(){
   selTime = null;
   updateCta();
   document.getElementById('conflict').style.display = 'none';
   const g = document.getElementById('tgrid');
+  g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ Đang kiểm tra lịch trống...</div>';
+
+  // Lấy danh sách giờ đã book cho ngày được chọn
+  const dateStr = selDate.toISOString().slice(0,10);
+  const shopId  = CONFIG.shopId || '';
+  let bookedSlots = [];
+
+  if(bookedCache[dateStr] !== undefined){
+    bookedSlots = bookedCache[dateStr];
+  } else {
+    try {
+      const res = await fetch(
+        API_URL + '?action=getBooked&shopId=' + encodeURIComponent(shopId) + '&date=' + dateStr,
+        { method: 'GET' }
+      );
+      const data = await res.json();
+      // API trả về { booked: ["08:30","09:00"] }
+      bookedSlots = Array.isArray(data.booked) ? data.booked : [];
+    } catch(e){
+      // Nếu fetch lỗi → dùng mảng rỗng, vẫn hiển thị slot (safe fallback)
+      bookedSlots = [];
+    }
+    bookedCache[dateStr] = bookedSlots;
+  }
+
   g.innerHTML = '';
   CONFIG.slots.forEach(s => {
-    const blocked = CONFIG.blockedSlots.includes(s);
+    const hardBlocked   = CONFIG.blockedSlots.includes(s);
+    const alreadyBooked = bookedSlots.includes(s);
+    const isBlocked     = hardBlocked || alreadyBooked;
+
     const b = document.createElement('div');
-    b.className = 'tb' + (blocked ? ' blk' : '');
+    b.className = 'tb' + (isBlocked ? ' blk' : '');
     b.textContent = s;
-    if(!blocked) b.onclick = () => pickTime(b, s);
+    if(isBlocked){
+      b.title = alreadyBooked ? 'Giờ này đã có khách đặt' : 'Giờ này không khả dụng';
+    } else {
+      b.onclick = () => pickTime(b, s);
+    }
     g.appendChild(b);
   });
+
+  // Hiện thông báo nếu giờ khách đang xem đã bị book
+  if(selTime && bookedSlots.includes(selTime)){
+    selTime = null;
+    document.getElementById('cmsg').textContent = 'Giờ bạn chọn vừa được người khác đặt. Vui lòng chọn giờ khác.';
+    document.getElementById('conflict').style.display = 'block';
+    updateCta();
+  }
 }
 
 function pickTime(btn, t){
