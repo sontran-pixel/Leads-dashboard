@@ -418,15 +418,8 @@ async function buildSlots(){
     bookedSlots = bookedCache[dateStr];
   } else {
     try {
-      const res = await fetch(
-        API_URL + '?action=getBooked&shopId=' + encodeURIComponent(shopId) + '&date=' + dateStr,
-        { method: 'GET' }
-      );
-      const data = await res.json();
-      // API trả về { booked: ["08:30","09:00"] }
-      bookedSlots = Array.isArray(data.booked) ? data.booked : [];
+      bookedSlots = await fetchBookedJsonp(shopId, dateStr);
     } catch(e){
-      // Nếu fetch lỗi → dùng mảng rỗng, vẫn hiển thị slot (safe fallback)
       bookedSlots = [];
     }
     bookedCache[dateStr] = bookedSlots;
@@ -589,6 +582,41 @@ function shakeInput(){
       el.style.animation = 'shake .3s';
       setTimeout(()=>{ el.style.borderColor=''; el.style.animation=''; }, 600);
     }
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  JSONP helper — bypass CORS cho Google Apps Script GET
+// ════════════════════════════════════════════════════════════
+function fetchBookedJsonp(shopId, date){
+  return new Promise((resolve, reject) => {
+    const cbName = '_be_' + Date.now();
+    const script = document.createElement('script');
+    const url = API_URL
+      + '?action=getBooked'
+      + '&shopId=' + encodeURIComponent(shopId)
+      + '&date='   + encodeURIComponent(date)
+      + '&callback=' + cbName;
+
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('timeout'));
+    }, 8000);
+
+    window[cbName] = function(data){
+      cleanup();
+      resolve(Array.isArray(data.booked) ? data.booked : []);
+    };
+
+    function cleanup(){
+      clearTimeout(timer);
+      delete window[cbName];
+      if(script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    script.onerror = () => { cleanup(); reject(new Error('script error')); };
+    script.src = url;
+    document.head.appendChild(script);
   });
 }
 
