@@ -99,6 +99,25 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 .bfill{width:100%;border-radius:4px 4px 0 0;transition:height .4s}
 .blbl{font-size:9px;color:var(--muted)}
 .bamt{font-size:9px;font-weight:600;color:var(--sc)}
+.bcol{cursor:pointer}
+.bcol:active .bfill{opacity:.75}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal-box{background:var(--card);border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+.modal-head{padding:16px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.modal-title{font-size:15px;font-weight:700}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{overflow-y:auto;padding:12px 16px;flex:1}
+.modal-bk{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.modal-bk:last-child{border:none}
+.modal-bk-date{font-size:11px;color:var(--muted);min-width:36px;text-align:center}
+.modal-bk-day{font-size:16px;font-weight:700}
+.modal-bk-info{flex:1;min-width:0}
+.modal-bk-name{font-size:13px;font-weight:600}
+.modal-bk-svc{font-size:11px;color:var(--muted);margin-top:1px}
+.modal-bk-price{font-size:13px;font-weight:700;color:var(--sc)}
+.modal-total{padding:12px 0 0;font-size:13px;font-weight:600;border-top:2px solid var(--border);margin-top:4px;display:flex;justify-content:space-between}
 
 .svc-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:12px}
 .svc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -674,7 +693,7 @@ function drawChart(period,btn){
       const d=new Date(T);d.setDate(T.getDate()-i);
       const dstr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
       const rev=conf.filter(b=>b.date===dstr).reduce((s,b)=>s+b.price,0);
-      cols.push({lbl:DAYS[d.getDay()],rev,hi:dstr===TS});
+      cols.push({lbl:DAYS[d.getDay()],rev,hi:dstr===TS,dstr});
     }
   } else {
     // Số tháng hiển thị theo curRange, tối đa 12
@@ -685,16 +704,62 @@ function drawChart(period,btn){
       const cutStr2=cutoff2.getFullYear()+'-'+String(cutoff2.getMonth()+1).padStart(2,'0')+'-01';
       const mPfx=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
       const rev=conf.filter(b=>b.date>=cutStr2&&b.date.startsWith(mPfx)).reduce((s,b)=>s+b.price,0);
-      cols.push({lbl:'T'+(d.getMonth()+1),rev,hi:i===0});
+      cols.push({lbl:'T'+(d.getMonth()+1),rev,hi:i===0,mPfx});
     }
   }
   const mx=Math.max(...cols.map(c=>c.rev),1);
+  const _period = period;
   document.getElementById('chart').innerHTML=cols.map(c=>`
-    <div class="bcol">
+    <div class="bcol" onclick="showColDetail(${JSON.stringify(c).replace(/"/g,'&quot;')},'${_period}')">
       <div class="bamt">${c.rev>0?fmt(c.rev):''}</div>
       <div class="bfill" style="height:${Math.max(Math.round(c.rev/mx*64),2)}px;background:${c.hi?'var(--sc)':'var(--sl)'}"></div>
       <div class="blbl" style="color:${c.hi?'var(--sc)':'var(--muted)'};font-weight:${c.hi?600:400}">${c.lbl}</div>
     </div>`).join('');
+}
+
+const VDAYS=['CN','T2','T3','T4','T5','T6','T7'];
+
+function showColDetail(col, period){
+  const conf=BK.filter(b=>b.st==='confirmed');
+  let items=[];
+  if(period==='week'){
+    items=conf.filter(b=>b.date===col.dstr);
+  } else {
+    items=conf.filter(b=>col.mPfx&&b.date.startsWith(col.mPfx));
+  }
+  items.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+
+  const label = period==='week'
+    ? (col.hi?'Hôm nay':col.lbl+' · '+col.dstr)
+    : col.lbl+' · '+(col.mPfx||'');
+
+  document.getElementById('modal-title').textContent = label+' — '+items.length+' lịch';
+
+  const body = items.length
+    ? items.map(b=>{
+        const d=new Date(b.date+'T00:00:00');
+        return `<div class="modal-bk">
+          <div class="modal-bk-date">
+            <div class="modal-bk-day">${String(d.getDate()).padStart(2,'0')}</div>
+            <div style="font-size:10px;color:var(--muted)">${VDAYS[d.getDay()]}</div>
+          </div>
+          <div class="modal-bk-info">
+            <div class="modal-bk-name">${b.name} · ${b.time}</div>
+            <div class="modal-bk-svc">${b.svc}</div>
+            <div style="font-size:11px;color:var(--muted)">${b.phone}</div>
+          </div>
+          <div class="modal-bk-price">${fmtF(b.price)}</div>
+        </div>`;
+      }).join('')
+      + `<div class="modal-total"><span>Tổng</span><span>${fmtF(items.reduce((s,b)=>s+b.price,0))}</span></div>`
+    : '<div class="empty" style="padding:24px 0;text-align:center">Không có lịch hẹn</div>';
+
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('bk-modal').classList.add('on');
+}
+
+function closeModal(){
+  document.getElementById('bk-modal').classList.remove('on');
 }
 
 function renderSvc(conf){
