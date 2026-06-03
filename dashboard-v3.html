@@ -6,7 +6,7 @@
 <title>Dashboard – Spa Hoa Lan</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--sc:#C8693A;--sl:#FDF0E8;--ink:#0F0D1A;--bg:#F6F4F1;--card:#fff;--muted:#7A7468;--border:#EDE9E2;--teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;--red:#E5484D;--rl:#FFECEC;--amber:#D4850A;--al:#FFF4DE;}
+:root{--sc:#3B82F6;--sl:#EFF6FF;--ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;--muted:#64748B;--border:#E2E8F0;--teal:#10B981;--tl:#ECFDF5;--td:#059669;--red:#EF4444;--rl:#FEF2F2;--amber:#F59E0B;--al:#FFFBEB;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--ink);max-width:430px;margin:0 auto;min-height:100vh}
 
@@ -99,10 +99,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 .bfill{width:100%;border-radius:4px 4px 0 0;transition:height .4s}
 .blbl{font-size:9px;color:var(--muted)}
 .bamt{font-size:9px;font-weight:600;color:var(--sc)}
-.bcol{cursor:pointer}
-.bcol:active .bfill{opacity:.75}
-/* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.bcol{cursor:pointer}.bcol:active .bfill{opacity:.75}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.on{display:flex}
 .modal-box{background:var(--card);border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
 .modal-head{padding:16px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
@@ -313,15 +311,7 @@ const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String
 function ds(n){const d=new Date(T);d.setDate(T.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
 
-// Shop configs để hiển thị đúng tên, emoji, địa chỉ
-const SHOP_CONFIGS = {
-  "quynhspa": {
-    shopName: "Quỳnh Spa",
-    shopEmoji: "🌸",
-    shopAddress: "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai"
-  }
-  // Thêm shop mới vào đây khi có khách hàng mới
-};
+let SHOP_CONFIG_CACHE = null;
 
 // SHOP_ID được set khi đăng nhập
 let SHOP_ID = '';
@@ -482,35 +472,31 @@ async function updateStatus(rowIndex, newStatus, displayName){
 }
 
 // ── LOGIN / LOGOUT ────────────────────────────────────────
-function enterApp(){
+async function enterApp(){
   const shopInput = document.getElementById('shop-id-input');
-  SHOP_ID = shopInput ? shopInput.value.trim() : 'hoalan';
+  SHOP_ID = shopInput ? shopInput.value.trim() : '';
   if(!SHOP_ID){ toast('Vui lòng nhập Shop ID!'); return; }
-
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='flex';
-
-  // Hiển thị tên shop từ config nếu có, fallback về shopId
-  const shopCfg = SHOP_CONFIGS ? SHOP_CONFIGS[SHOP_ID] : null;
-  const displayName = shopCfg ? shopCfg.shopName : SHOP_ID;
-  const displayEmoji = shopCfg ? shopCfg.shopEmoji : '🏪';
-  const displayAddr = shopCfg ? shopCfg.shopAddress : '';
-
-  document.querySelector('.tb-name').textContent = displayName;
-  document.querySelector('.tb-av').textContent   = displayEmoji;
-  document.querySelector('.tb-sub').textContent  = displayAddr;
-
-  // Cập nhật settings page
-  const cfgName = document.getElementById('cfg-name');
-  const cfgIco  = document.getElementById('cfg-ico');
-  if(cfgName) cfgName.textContent = displayName + ' →';
-  if(cfgIco)  cfgIco.textContent  = displayEmoji;
-
-  // Load dữ liệu thật
+  let displayName=SHOP_ID, displayEmoji='🏪', displayAddr='';
+  try{
+    const res=await fetch('/shops/'+SHOP_ID+'.json');
+    if(res.ok){
+      SHOP_CONFIG_CACHE=await res.json();
+      displayName=SHOP_CONFIG_CACHE.shopName||SHOP_ID;
+      displayEmoji=SHOP_CONFIG_CACHE.shopEmoji||'🏪';
+      displayAddr=SHOP_CONFIG_CACHE.shopAddress||'';
+    }
+  }catch(e){}
+  document.querySelector('.tb-name').textContent=displayName;
+  document.querySelector('.tb-av').textContent=displayEmoji;
+  document.querySelector('.tb-sub').textContent=displayAddr;
+  const cfgName=document.getElementById('cfg-name');
+  const cfgIco=document.getElementById('cfg-ico');
+  if(cfgName) cfgName.textContent=displayName+' →';
+  if(cfgIco)  cfgIco.textContent=displayEmoji;
   loadBookings();
-
-  // Tự động refresh mỗi 30 giây
-  autoRefreshTimer = setInterval(loadBookings, 30000);
+  autoRefreshTimer=setInterval(loadBookings,30000);
 }
 
 function exitApp(){
@@ -708,7 +694,7 @@ function drawChart(period,btn){
     }
   }
   const mx=Math.max(...cols.map(c=>c.rev),1);
-  const _period = period;
+  const _period=period;
   document.getElementById('chart').innerHTML=cols.map(c=>`
     <div class="bcol" onclick="showColDetail(${JSON.stringify(c).replace(/"/g,'&quot;')},'${_period}')">
       <div class="bamt">${c.rev>0?fmt(c.rev):''}</div>
@@ -718,49 +704,25 @@ function drawChart(period,btn){
 }
 
 const VDAYS=['CN','T2','T3','T4','T5','T6','T7'];
-
-function showColDetail(col, period){
+function showColDetail(col,period){
   const conf=BK.filter(b=>b.st==='confirmed');
-  let items=[];
-  if(period==='week'){
-    items=conf.filter(b=>b.date===col.dstr);
-  } else {
-    items=conf.filter(b=>col.mPfx&&b.date.startsWith(col.mPfx));
-  }
+  let items=period==='week'
+    ? conf.filter(b=>b.date===col.dstr)
+    : conf.filter(b=>col.mPfx&&b.date.startsWith(col.mPfx));
   items.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
-
-  const label = period==='week'
-    ? (col.hi?'Hôm nay':col.lbl+' · '+col.dstr)
-    : col.lbl+' · '+(col.mPfx||'');
-
-  document.getElementById('modal-title').textContent = label+' — '+items.length+' lịch';
-
-  const body = items.length
-    ? items.map(b=>{
-        const d=new Date(b.date+'T00:00:00');
-        return `<div class="modal-bk">
-          <div class="modal-bk-date">
-            <div class="modal-bk-day">${String(d.getDate()).padStart(2,'0')}</div>
-            <div style="font-size:10px;color:var(--muted)">${VDAYS[d.getDay()]}</div>
-          </div>
-          <div class="modal-bk-info">
-            <div class="modal-bk-name">${b.name} · ${b.time}</div>
-            <div class="modal-bk-svc">${b.svc}</div>
-            <div style="font-size:11px;color:var(--muted)">${b.phone}</div>
-          </div>
-          <div class="modal-bk-price">${fmtF(b.price)}</div>
-        </div>`;
-      }).join('')
-      + `<div class="modal-total"><span>Tổng</span><span>${fmtF(items.reduce((s,b)=>s+b.price,0))}</span></div>`
+  const label=period==='week'?(col.hi?'Hôm nay':col.lbl+' · '+col.dstr):col.lbl+' · '+(col.mPfx||'');
+  document.getElementById('modal-title').textContent=label+' — '+items.length+' lịch';
+  const body=items.length
+    ? items.map(b=>{const d=new Date(b.date+'T00:00:00');return `<div class="modal-bk">
+        <div class="modal-bk-date"><div class="modal-bk-day">${String(d.getDate()).padStart(2,'0')}</div><div style="font-size:10px;color:var(--muted)">${VDAYS[d.getDay()]}</div></div>
+        <div class="modal-bk-info"><div class="modal-bk-name">${b.name} · ${b.time}</div><div class="modal-bk-svc">${b.svc}</div><div style="font-size:11px;color:var(--muted)">${b.phone}</div></div>
+        <div class="modal-bk-price">${fmtF(b.price)}</div></div>`;}).join('')
+      +`<div class="modal-total"><span>Tổng</span><span>${fmtF(items.reduce((s,b)=>s+b.price,0))}</span></div>`
     : '<div class="empty" style="padding:24px 0;text-align:center">Không có lịch hẹn</div>';
-
   document.getElementById('modal-body').innerHTML=body;
   document.getElementById('bk-modal').classList.add('on');
 }
-
-function closeModal(){
-  document.getElementById('bk-modal').classList.remove('on');
-}
+function closeModal(){ document.getElementById('bk-modal').classList.remove('on'); }
 
 function renderSvc(conf){
   const map={};

@@ -8,10 +8,10 @@
 <style>
 :root{
   --shop-color:#C8693A;
-  --shop-light:#FDF0E8;
-  --shop-dark:#9A4E2A;
-  --ink:#0F0D1A;--bg:#FAF8F4;--card:#fff;
-  --muted:#7A7468;--border:#EDE9E2;
+  --shop-light:#EFF6FF;
+  --shop-dark:#1D4ED8;
+  --ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;
+  --muted:#64748B;--border:#E2E8F0;
   --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
   --r:14px;
 }
@@ -65,25 +65,17 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 /* ── SERVICE LIST ── */
 .svc-list{display:flex;flex-direction:column;gap:8px}
-.svc-wrap{border:1.5px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color .15s}
-.svc-wrap.sel{border-color:var(--shop-color)}
-.svc-item{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;background:var(--card)}
-.svc-wrap.sel .svc-item{background:var(--shop-light)}
-.svc-item:active{opacity:.85}
+.svc-item{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1.5px solid var(--border);border-radius:11px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.svc-item.sel{border-color:var(--shop-color);background:var(--shop-light)}
+.svc-item:active{transform:scale(.98)}
 .svc-left{display:flex;align-items:center;gap:10px}
 .svc-icon{width:36px;height:36px;border-radius:9px;background:var(--shop-light);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .15s}
-.svc-wrap.sel .svc-icon{background:var(--shop-color);color:#fff}
+.svc-item.sel .svc-icon{background:var(--shop-color);color:#fff}
 .svc-name{font-size:14px;font-weight:500}
 .svc-dur{font-size:12px;color:var(--muted);margin-top:1px}
 .svc-price{font-size:14px;font-weight:600;color:var(--shop-color)}
 .svc-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;flex-shrink:0}
-.svc-wrap.sel .svc-check{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
-/* Detail expand */
-.svc-detail{display:none;padding:0 14px 13px 14px;background:var(--shop-light)}
-.svc-wrap.sel .svc-detail{display:block}
-.svc-detail ul{list-style:none;display:flex;flex-direction:column;gap:5px}
-.svc-detail ul li{font-size:12px;color:var(--ink);display:flex;align-items:flex-start;gap:6px;line-height:1.5}
-.svc-detail ul li::before{content:'✓';color:var(--shop-color);font-weight:700;flex-shrink:0;margin-top:1px}
+.svc-item.sel .svc-check{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
 
 /* ── DATE SELECTOR ── */
 .date-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:14px}
@@ -263,33 +255,22 @@ function renderServices(cfg){
   list.innerHTML = '';
   cfg.services.forEach(svc => {
     const priceK = (svc.price/1000).toFixed(0) + 'k';
-
-    // Detail items
-    const detailHtml = svc.details && svc.details.length
-      ? '<div class="svc-detail"><ul>' +
-        svc.details.map(d => '<li>' + d + '</li>').join('') +
-        '</ul></div>'
-      : '';
-
-    const wrap = document.createElement('div');
-    wrap.className = 'svc-wrap';
-    wrap.innerHTML = `
-      <div class="svc-item">
-        <div class="svc-left">
-          <div class="svc-icon">${svc.icon}</div>
-          <div>
-            <div class="svc-name">${svc.name}</div>
-            <div class="svc-dur">${svc.duration} phút · ${priceK}</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="svc-check">✓</div>
+    const el = document.createElement('div');
+    el.className = 'svc-item';
+    el.innerHTML = `
+      <div class="svc-left">
+        <div class="svc-icon">${svc.icon}</div>
+        <div>
+          <div class="svc-name">${svc.name}</div>
+          <div class="svc-dur">${svc.duration} phút</div>
         </div>
       </div>
-      ${detailHtml}`;
-
-    wrap.onclick = () => selSvc(wrap, svc.name, svc.duration, svc.price, svc.icon);
-    list.appendChild(wrap);
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="svc-price">${priceK}</div>
+        <div class="svc-check">✓</div>
+      </div>`;
+    el.onclick = () => selSvc(el, svc.name, svc.duration, svc.price, svc.icon);
+    list.appendChild(el);
   });
 }
 
@@ -329,9 +310,9 @@ function initApp(cfg){
 //  LOGIC ĐẶT LỊCH
 // ════════════════════════════════════════════════════════════
 
-function selSvc(wrap, name, dur, price, icon){
-  document.querySelectorAll('.svc-wrap').forEach(e => e.classList.remove('sel'));
-  wrap.classList.add('sel');
+function selSvc(el, name, dur, price, icon){
+  document.querySelectorAll('.svc-item').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
   selService = { name, dur, price, icon };
   updateCta();
 }
