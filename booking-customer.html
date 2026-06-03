@@ -8,8 +8,8 @@
 <style>
 :root{
   --shop-color:#C8693A;
-  --shop-light:#EFF6FF;
-  --shop-dark:#1D4ED8;
+  --shop-light:#FDF0E8;
+  --shop-dark:#9A4E2A;
   --ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;
   --muted:#64748B;--border:#E2E8F0;
   --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
@@ -65,17 +65,23 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 /* ── SERVICE LIST ── */
 .svc-list{display:flex;flex-direction:column;gap:8px}
-.svc-item{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1.5px solid var(--border);border-radius:11px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.svc-item.sel{border-color:var(--shop-color);background:var(--shop-light)}
-.svc-item:active{transform:scale(.98)}
+.svc-wrap{border:1.5px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color .15s;margin-bottom:0}
+.svc-wrap.sel{border-color:var(--shop-color)}
+.svc-item{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;background:var(--card)}
+.svc-wrap.sel .svc-item{background:var(--shop-light)}
+.svc-item:active{opacity:.85}
 .svc-left{display:flex;align-items:center;gap:10px}
 .svc-icon{width:36px;height:36px;border-radius:9px;background:var(--shop-light);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .15s}
-.svc-item.sel .svc-icon{background:var(--shop-color);color:#fff}
+.svc-wrap.sel .svc-icon{background:var(--shop-color);color:#fff}
 .svc-name{font-size:14px;font-weight:500}
 .svc-dur{font-size:12px;color:var(--muted);margin-top:1px}
-.svc-price{font-size:14px;font-weight:600;color:var(--shop-color)}
 .svc-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;flex-shrink:0}
-.svc-item.sel .svc-check{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
+.svc-wrap.sel .svc-check{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
+.svc-detail{display:none;padding:0 14px 13px 60px;background:var(--shop-light)}
+.svc-wrap.sel .svc-detail{display:block}
+.svc-detail ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.svc-detail ul li{font-size:12px;color:var(--ink);display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.svc-detail ul li::before{content:'✓';color:var(--shop-color);font-weight:700;flex-shrink:0}
 
 /* ── DATE SELECTOR ── */
 .date-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:14px}
@@ -111,7 +117,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 .gc-dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
 
 /* ── CTA ── */
-.cta-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(250,248,244,.92);backdrop-filter:blur(12px);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border)}
+.cta-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(248,250,252,.92);backdrop-filter:blur(12px);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border)}
 .btn-main{width:100%;padding:15px;background:var(--shop-color);color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;transition:opacity .15s,transform .15s;-webkit-tap-highlight-color:transparent}
 .btn-main:active{opacity:.85;transform:scale(.98)}
 .btn-main:disabled{opacity:.4;cursor:not-allowed}
@@ -255,22 +261,25 @@ function renderServices(cfg){
   list.innerHTML = '';
   cfg.services.forEach(svc => {
     const priceK = (svc.price/1000).toFixed(0) + 'k';
-    const el = document.createElement('div');
-    el.className = 'svc-item';
-    el.innerHTML = `
-      <div class="svc-left">
-        <div class="svc-icon">${svc.icon}</div>
-        <div>
-          <div class="svc-name">${svc.name}</div>
-          <div class="svc-dur">${svc.duration} phút</div>
+    const detailHtml = svc.details && svc.details.length
+      ? '<div class="svc-detail"><ul>' + svc.details.map(d=>'<li>'+d+'</li>').join('') + '</ul></div>'
+      : '';
+    const wrap = document.createElement('div');
+    wrap.className = 'svc-wrap';
+    wrap.innerHTML = `
+      <div class="svc-item">
+        <div class="svc-left">
+          <div class="svc-icon">${svc.icon}</div>
+          <div>
+            <div class="svc-name">${svc.name}</div>
+            <div class="svc-dur">${svc.duration} phút · ${priceK}</div>
+          </div>
         </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="svc-price">${priceK}</div>
         <div class="svc-check">✓</div>
-      </div>`;
-    el.onclick = () => selSvc(el, svc.name, svc.duration, svc.price, svc.icon);
-    list.appendChild(el);
+      </div>
+      ${detailHtml}`;
+    wrap.onclick = () => selSvc(wrap, svc.name, svc.duration, svc.price, svc.icon);
+    list.appendChild(wrap);
   });
 }
 
@@ -310,9 +319,9 @@ function initApp(cfg){
 //  LOGIC ĐẶT LỊCH
 // ════════════════════════════════════════════════════════════
 
-function selSvc(el, name, dur, price, icon){
-  document.querySelectorAll('.svc-item').forEach(e => e.classList.remove('sel'));
-  el.classList.add('sel');
+function selSvc(wrap, name, dur, price, icon){
+  document.querySelectorAll('.svc-wrap').forEach(e => e.classList.remove('sel'));
+  wrap.classList.add('sel');
   selService = { name, dur, price, icon };
   updateCta();
 }
@@ -343,53 +352,56 @@ function pickDate(btn, d){
 // Cache lịch đã book: { "2026-05-28": ["08:30","09:00",...] }
 const bookedCache = {};
 
+async const bookedCache = {};
+
 async function buildSlots(){
   selTime = null;
   updateCta();
   document.getElementById('conflict').style.display = 'none';
   const g = document.getElementById('tgrid');
   g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ Đang kiểm tra lịch trống...</div>';
-
-  // Lấy danh sách giờ đã book cho ngày được chọn
   const dateStr = selDate.toISOString().slice(0,10);
   const shopId  = CONFIG.shopId || '';
   let bookedSlots = [];
-
   if(bookedCache[dateStr] !== undefined){
     bookedSlots = bookedCache[dateStr];
   } else {
-    try {
-      bookedSlots = await fetchBookedJsonp(shopId, dateStr);
-    } catch(e){
-      bookedSlots = [];
-    }
+    try { bookedSlots = await fetchBookedJsonp(shopId, dateStr); }
+    catch(e){ bookedSlots = []; }
     bookedCache[dateStr] = bookedSlots;
   }
-
   g.innerHTML = '';
   CONFIG.slots.forEach(s => {
     const hardBlocked   = CONFIG.blockedSlots.includes(s);
     const alreadyBooked = bookedSlots.includes(s);
     const isBlocked     = hardBlocked || alreadyBooked;
-
     const b = document.createElement('div');
     b.className = 'tb' + (isBlocked ? ' blk' : '');
     b.textContent = s;
-    if(isBlocked){
-      b.title = alreadyBooked ? 'Giờ này đã có khách đặt' : 'Giờ này không khả dụng';
-    } else {
-      b.onclick = () => pickTime(b, s);
-    }
+    if(isBlocked) b.title = alreadyBooked ? 'Giờ này đã có khách đặt' : 'Giờ này không khả dụng';
+    else b.onclick = () => pickTime(b, s);
     g.appendChild(b);
   });
-
-  // Hiện thông báo nếu giờ khách đang xem đã bị book
   if(selTime && bookedSlots.includes(selTime)){
     selTime = null;
     document.getElementById('cmsg').textContent = 'Giờ bạn chọn vừa được người khác đặt. Vui lòng chọn giờ khác.';
     document.getElementById('conflict').style.display = 'block';
     updateCta();
   }
+}
+
+function fetchBookedJsonp(shopId, date){
+  return new Promise((resolve, reject) => {
+    const cbName = '_be_' + Date.now();
+    const script = document.createElement('script');
+    const url = API_URL + '?action=getBooked&shopId=' + encodeURIComponent(shopId) + '&date=' + encodeURIComponent(date) + '&callback=' + cbName;
+    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 8000);
+    window[cbName] = function(data){ cleanup(); resolve(Array.isArray(data.booked) ? data.booked : []); };
+    function cleanup(){ clearTimeout(timer); delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); }
+    script.onerror = () => { cleanup(); reject(new Error('script error')); };
+    script.src = url;
+    document.head.appendChild(script);
+  });
 }
 
 function pickTime(btn, t){
