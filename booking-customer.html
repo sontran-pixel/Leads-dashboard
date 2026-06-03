@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shop-color:#C8693A;
-  --shop-light:#FDF0E8;
-  --shop-dark:#9A4E2A;
+  --shop-color:#3B82F6;
+  --shop-light:#EFF6FF;
+  --shop-dark:#1D4ED8;
   --ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;
   --muted:#64748B;--border:#E2E8F0;
-  --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
+  --teal:#10B981;--tl:#ECFDF5;--td:#059669;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -244,9 +244,10 @@ function getShopId(){
 
 function applyTheme(cfg){
   const r = document.documentElement.style;
-  r.setProperty('--shop-color', cfg.color);
-  r.setProperty('--shop-light', cfg.colorLight);
-  r.setProperty('--shop-dark',  cfg.colorDark);
+  // Màu cố định CRM — không lấy từ JSON
+  r.setProperty('--shop-color', '#3B82F6');
+  r.setProperty('--shop-light', '#EFF6FF');
+  r.setProperty('--shop-dark',  '#1D4ED8');
 }
 
 function renderHeader(cfg){
