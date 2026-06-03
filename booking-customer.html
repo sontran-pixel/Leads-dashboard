@@ -285,22 +285,30 @@ function renderServices(cfg){
 
 async function loadShop(){
   const shopId = getShopId();
-
   if(!shopId){
     document.getElementById('loading').style.display = 'none';
     document.getElementById('error-screen').style.display = 'flex';
     document.getElementById('error-msg').textContent = 'Link không hợp lệ. Vui lòng liên hệ chủ tiệm.';
     return;
   }
-
-  try {
-    const res = await fetch(`/shops/${shopId}.json`);
-    if(!res.ok) throw new Error('not found');
-    const cfg = await res.json();
-    document.getElementById('loading').style.display = 'none';
+  // Thử nhiều path để đảm bảo tìm được file JSON
+  const base = location.href.split('/booking-customer.html')[0];
+  const paths = [
+    base + '/shops/' + shopId + '.json',
+    '/shops/' + shopId + '.json',
+    'shops/' + shopId + '.json'
+  ];
+  let cfg = null;
+  for(const path of paths){
+    try{
+      const res = await fetch(path);
+      if(res.ok){ cfg = await res.json(); break; }
+    }catch(e){}
+  }
+  document.getElementById('loading').style.display = 'none';
+  if(cfg){
     initApp(cfg);
-  } catch(e) {
-    document.getElementById('loading').style.display = 'none';
+  } else {
     document.getElementById('error-screen').style.display = 'flex';
     document.getElementById('error-msg').textContent = 'Không tìm thấy tiệm "' + shopId + '". Vui lòng kiểm tra lại link.';
   }
