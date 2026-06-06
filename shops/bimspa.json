@@ -1,0 +1,142 @@
+{
+  "shopId": "bimspa",
+  "shopName": "Bim Spa",
+  "shopEmoji": "💅",
+  "shopAddress": "20A/13 Nguyễn Phúc Chu, Tổ 2, KP5, P. Trảng Dài, TP. Đồng Nai",
+  "color": "#E8477A",
+  "colorLight": "#FDE8EF",
+  "colorDark": "#B8305A",
+  "slots": [
+    "09:00","09:30","10:00","10:30","11:00","11:30",
+    "13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30"
+  ],
+  "blockedSlots": [],
+  "services": [
+    {
+      "name": "Gội Sạch Không Massage",
+      "duration": 20,
+      "price": 40000,
+      "icon": "🚿",
+      "details": ["Gội sạch đầu", "Sấy khô"]
+    },
+    {
+      "name": "Gội Thảo Mộc + Dầu Cặp",
+      "duration": 40,
+      "price": 85000,
+      "icon": "🌿",
+      "details": ["Gội thảo mộc", "Ủ dầu cặp dưỡng tóc", "Sấy – xịt dưỡng"]
+    },
+    {
+      "name": "Dầu Gội Cao Cấp",
+      "duration": 40,
+      "price": 150000,
+      "icon": "✨",
+      "details": ["Gội đầu dầu gội cao cấp", "Massage đầu thư giãn", "Sấy – xịt dưỡng tóc"]
+    },
+    {
+      "name": "Gội Dưỡng Sinh Thảnh Thơi 60'",
+      "duration": 60,
+      "price": 200000,
+      "icon": "💆",
+      "details": ["Gội đầu dưỡng sinh", "Massage đầu – cổ – vai", "Ủ tóc dưỡng ẩm", "Sấy – xịt dưỡng"]
+    },
+    {
+      "name": "Gội Dưỡng Sinh Thư Giãn 90'",
+      "duration": 90,
+      "price": 260000,
+      "icon": "🌸",
+      "details": ["Gội đầu dưỡng sinh", "Massage đầu – cổ – vai – lưng", "Đắp mặt nạ dưỡng da", "Ủ tóc cao cấp", "Sấy – xịt dưỡng"]
+    },
+    {
+      "name": "Gội Dưỡng Sinh Chuyên Sâu 120'",
+      "duration": 120,
+      "price": 350000,
+      "icon": "👑",
+      "details": ["Gội đầu dưỡng sinh chuyên sâu", "Massage toàn thân thư giãn", "Xông hơi thảo dược", "Đắp mặt nạ nâng cơ", "Ủ tóc phục hồi chuyên sâu", "Sấy – xịt dưỡng cao cấp"]
+    },
+    {
+      "name": "Chăm Sóc Da Cơ Bản",
+      "duration": 60,
+      "price": 250000,
+      "icon": "🧴",
+      "details": ["Làm sạch da chuyên sâu", "Xông hơi mở lỗ chân lông", "Đắp mặt nạ dưỡng ẩm", "Massage mặt thư giãn"]
+    },
+    {
+      "name": "Chăm Sóc Da Chuyên Sâu",
+      "duration": 90,
+      "price": 380000,
+      "icon": "💎",
+      "details": ["Làm sạch da chuyên sâu", "Tẩy tế bào chết", "Xông hơi – hút mụn", "Đắp mặt nạ nâng cơ trắng da", "Massage mặt – cổ – vai"]
+    },
+    {
+      "name": "Chăm Sóc Da Mụn",
+      "duration": 90,
+      "price": 350000,
+      "icon": "🌱",
+      "details": ["Làm sạch da kháng khuẩn", "Xông hơi – nặn mụn chuyên nghiệp", "Đắp mặt nạ se khít lỗ chân lông", "Massage phục hồi da"]
+    },
+    {
+      "name": "Chăm Sóc Body Đá Nóng",
+      "duration": 90,
+      "price": 320000,
+      "icon": "🪨",
+      "details": ["Tắm trắng body", "Massage đá nóng thư giãn", "Ủ dưỡng body"]
+    },
+    {
+      "name": "Chăm Sóc Body Tinh Dầu",
+      "duration": 90,
+      "price": 340000,
+      "icon": "🫧",
+      "details": ["Massage body tinh dầu (dừa / trà / tràm...)", "Ủ dưỡng thảo mộc", "Dưỡng ẩm toàn thân"]
+    },
+    {
+      "name": "Chăm Sóc Body Thảo Dược",
+      "duration": 90,
+      "price": 325000,
+      "icon": "🌿",
+      "details": ["Tắm thảo dược thanh lọc", "Massage body thư giãn", "Ủ dưỡng thảo mộc thiên nhiên"]
+    },
+    {
+      "name": "Uốn Mi Collagen",
+      "duration": 60,
+      "price": 150000,
+      "icon": "👁️",
+      "details": ["Uốn mi collagen tự nhiên", "Dưỡng mi sau uốn"]
+    },
+    {
+      "name": "Chăm Sóc Tóc Mềm Mượt",
+      "duration": 90,
+      "price": 425000,
+      "icon": "💇",
+      "details": ["Gội đầu dưỡng sinh", "Ủ phục hồi tóc hư tổn", "Massage đầu thư giãn", "Sấy tóc mềm mượt"]
+    },
+    {
+      "name": "Làm Sạch Gót Chân",
+      "duration": 30,
+      "price": 180000,
+      "icon": "🦶",
+      "details": ["Ngâm chân thảo dược", "Tẩy da chết gót chân", "Dưỡng ẩm chân"]
+    },
+    {
+      "name": "Tẩy Da Chết",
+      "duration": 30,
+      "price": 40000,
+      "icon": "✨",
+      "details": ["Tẩy da chết toàn thân hoặc mặt", "Dưỡng ẩm sau tẩy"]
+    },
+    {
+      "name": "Đắp Mặt Nạ",
+      "duration": 30,
+      "price": 40000,
+      "icon": "🎭",
+      "details": ["Đắp mặt nạ dưỡng ẩm / trắng da / se khít lỗ chân lông"]
+    },
+    {
+      "name": "Phủ Bạc Tóc",
+      "duration": 60,
+      "price": 215000,
+      "icon": "🎨",
+      "details": ["Nhuộm phủ bạc tóc", "Ủ dưỡng sau nhuộm", "Sấy tạo kiểu"]
+    }
+  ]
+}
