@@ -12,7 +12,7 @@
   --shop-dark:#1D4ED8;
   --ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;
   --muted:#64748B;--border:#E2E8F0;
-  --teal:#10B981;--tl:#ECFDF5;--td:#059669;
+  --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -244,7 +244,6 @@ function getShopId(){
 
 function applyTheme(cfg){
   const r = document.documentElement.style;
-  // Màu cố định CRM — không lấy từ JSON
   r.setProperty('--shop-color', '#3B82F6');
   r.setProperty('--shop-light', '#EFF6FF');
   r.setProperty('--shop-dark',  '#1D4ED8');
@@ -583,7 +582,7 @@ function fetchBookedJsonp(shopId, date){
 // ════════════════════════════════════════════════════════════
 //  GOOGLE SHEETS API
 // ════════════════════════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbxWj-GzrERnHWjl7Q9GaUhoUAlWv5WX-3Z4QKv-seHogtqNY1DLPyfUG3BDzb-sTdxO/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbypYjTHoh30O599O5zHEZWpWJRGoRanGRkdLWocbOo2rKq5OCBF9oVmeljXq7o4vteH/exec';
 
 // ════════════════════════════════════════════════════════════
 //  KHỞI CHẠY

@@ -304,7 +304,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────
-const API_URL = 'https://script.google.com/macros/s/AKfycbxWj-GzrERnHWjl7Q9GaUhoUAlWv5WX-3Z4QKv-seHogtqNY1DLPyfUG3BDzb-sTdxO/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbypYjTHoh30O599O5zHEZWpWJRGoRanGRkdLWocbOo2rKq5OCBF9oVmeljXq7o4vteH/exec';
 const T = new Date();
 // Dùng ngày local (UTC+7) thay vì ISO UTC để tránh lệch ngày
 const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String(T.getDate()).padStart(2,'0');
@@ -706,19 +706,17 @@ function drawChart(period,btn){
 const VDAYS=['CN','T2','T3','T4','T5','T6','T7'];
 function showColDetail(col,period){
   const conf=BK.filter(b=>b.st==='confirmed');
-  let items=period==='week'
-    ? conf.filter(b=>b.date===col.dstr)
-    : conf.filter(b=>col.mPfx&&b.date.startsWith(col.mPfx));
+  let items=period==='week'?conf.filter(b=>b.date===col.dstr):conf.filter(b=>col.mPfx&&b.date.startsWith(col.mPfx));
   items.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
   const label=period==='week'?(col.hi?'Hôm nay':col.lbl+' · '+col.dstr):col.lbl+' · '+(col.mPfx||'');
   document.getElementById('modal-title').textContent=label+' — '+items.length+' lịch';
   const body=items.length
-    ? items.map(b=>{const d=new Date(b.date+'T00:00:00');return `<div class="modal-bk">
+    ?items.map(b=>{const d=new Date(b.date+'T00:00:00');return `<div class="modal-bk">
         <div class="modal-bk-date"><div class="modal-bk-day">${String(d.getDate()).padStart(2,'0')}</div><div style="font-size:10px;color:var(--muted)">${VDAYS[d.getDay()]}</div></div>
         <div class="modal-bk-info"><div class="modal-bk-name">${b.name} · ${b.time}</div><div class="modal-bk-svc">${b.svc}</div><div style="font-size:11px;color:var(--muted)">${b.phone}</div></div>
         <div class="modal-bk-price">${fmtF(b.price)}</div></div>`;}).join('')
       +`<div class="modal-total"><span>Tổng</span><span>${fmtF(items.reduce((s,b)=>s+b.price,0))}</span></div>`
-    : '<div class="empty" style="padding:24px 0;text-align:center">Không có lịch hẹn</div>';
+    :'<div class="empty" style="padding:24px 0;text-align:center">Không có lịch hẹn</div>';
   document.getElementById('modal-body').innerHTML=body;
   document.getElementById('bk-modal').classList.add('on');
 }
