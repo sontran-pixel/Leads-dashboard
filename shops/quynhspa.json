@@ -2,10 +2,15 @@
   "shopId": "quynhspa",
   "shopName": "Quỳnh Spa",
   "shopEmoji": "🌸",
-  "shopAddress": "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, TP. Đồng Nai",
+  "shopAddress": "F117, đường D7 Võ Thị Sáu, P. Trấn Biên, Biên Hòa, Đồng Nai",
   "color": "#E8477A",
   "colorLight": "#FDE8EF",
   "colorDark": "#B8305A",
+  "banners": [
+    "https://lh3.googleusercontent.com/d/1orkQjhSk1-T_GDkDEFAxoAk836yp4lXC",
+    "https://lh3.googleusercontent.com/d/1k9J7dbj-fF9ta9sl3Di3P_bCRLFY73HM",
+    "https://lh3.googleusercontent.com/d/1utGp0F-RuUsAZB0kmMn10yCke1sumqcc"
+  ],
   "slots": [
     "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
     "13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"
@@ -14,50 +19,21 @@
   "services": [
     {
       "name": "Gội Đầu Cơ Bản",
-      "duration": 20,
-      "price": 50000,
-      "icon": "💆",
-      "details": [
-        "Gội đầu 2 lần dầu cặp",
-        "Xả tóc – Massage đầu",
-        "Sấy – Xịt dưỡng tóc",
-        "Ngồi máy massage chân"
-      ]
+      "duration": 20, "price": 50000, "icon": "💆",
+      "image": "https://lh3.googleusercontent.com/d/1orkQjhSk1-T_GDkDEFAxoAk836yp4lXC",
+      "details": ["Gội đầu 2 lần dầu cặp","Xả tóc – Massage đầu","Sấy – Xịt dưỡng tóc","Ngồi máy massage chân"]
     },
     {
       "name": "Gội Đầu Thư Giãn",
-      "duration": 40,
-      "price": 79000,
-      "icon": "✨",
-      "details": [
-        "Khai thông khứu giác – kinh huyệt",
-        "Massage đầu khô",
-        "Tẩy trang – Rửa mặt",
-        "Massage ấn huyệt Mặt – Cổ – Vai – Gáy",
-        "Gội 2 lần",
-        "Xả tóc – Massage đầu",
-        "Sấy – Xịt dưỡng siêu mượt thơm",
-        "Ngồi máy massage chân"
-      ]
+      "duration": 40, "price": 79000, "icon": "✨",
+      "image": "https://lh3.googleusercontent.com/d/1k9J7dbj-fF9ta9sl3Di3P_bCRLFY73HM",
+      "details": ["Khai thông khứu giác – kinh huyệt","Massage đầu khô","Tẩy trang – Rửa mặt","Massage ấn huyệt Mặt – Cổ – Vai – Gáy","Gội 2 lần","Xả tóc – Massage đầu","Sấy – Xịt dưỡng siêu mượt thơm","Ngồi máy massage chân"]
     },
     {
       "name": "Gội Đầu Chuyên Sâu",
-      "duration": 60,
-      "price": 179000,
-      "icon": "👑",
-      "details": [
-        "Massage đầu, khai thông huyệt",
-        "Tẩy trang – Rửa mặt",
-        "Massage mặt nâng cơ chuyên sâu",
-        "Xông mặt thải độc",
-        "Đắp nạ tự nhiên cấp ẩm, trắng da, nâng cơ",
-        "Massage Cổ Vai Gáy siêu phê",
-        "Gội 2 lần đầu gội cao cấp",
-        "Ủ tóc siêu mượt",
-        "Massage Vai – 2 tay – 2 chân",
-        "Sấy khô – Xịt dưỡng cao cấp / xịt mọc tóc",
-        "Ngồi máy massage chân"
-      ]
+      "duration": 60, "price": 179000, "icon": "👑",
+      "image": "https://lh3.googleusercontent.com/d/1utGp0F-RuUsAZB0kmMn10yCke1sumqcc",
+      "details": ["Massage đầu, khai thông huyệt","Tẩy trang – Rửa mặt","Massage mặt nâng cơ chuyên sâu","Xông mặt thải độc","Đắp nạ tự nhiên cấp ẩm, trắng da","Massage Cổ Vai Gáy siêu phê","Gội 2 lần đầu gội cao cấp","Ủ tóc siêu mượt","Massage Vai – 2 tay – 2 chân","Sấy khô – Xịt dưỡng cao cấp","Ngồi máy massage chân"]
     }
   ]
 }
