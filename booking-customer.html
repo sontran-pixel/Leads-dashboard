@@ -4,202 +4,277 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Đặt lịch online</title>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shop-color:#3B82F6;
-  --shop-light:#EFF6FF;
-  --shop-dark:#1D4ED8;
-  --ink:#1E293B;--bg:#F8FAFC;--card:#FFFFFF;
-  --muted:#64748B;--border:#E2E8F0;
-  --teal:#18A97A;--tl:#DFFAF0;--td:#0D7A58;
-  --r:14px;
+  --blue:#3B82F6;--blue-dark:#1D4ED8;--blue-light:#EFF6FF;
+  --ink:#0F172A;--ink2:#334155;--muted:#94A3B8;
+  --bg:#F1F5F9;--card:#FFFFFF;--border:#E2E8F0;
+  --green:#10B981;--green-light:#ECFDF5;
+  --red:#EF4444;--r:16px;
+  --shadow:0 2px 12px rgba(15,23,42,.08);
+  --shadow-lg:0 8px 32px rgba(15,23,42,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;max-width:430px;margin:0 auto;display:flex;flex-direction:column}
-
-/* ── LOADING ── */
-#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;gap:14px}
-.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--shop-color);border-radius:50%;animation:spin .7s linear infinite}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;max-width:430px;margin:0 auto;display:flex;flex-direction:column}
 @keyframes spin{to{transform:rotate(360deg)}}
-#loading p{font-size:14px;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-/* ── ERROR ── */
+/* LOADING */
+#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;gap:16px;background:var(--bg)}
+.spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+#loading p{font-size:14px;color:var(--muted);font-weight:500}
+
+/* ERROR */
 #error-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:32px;text-align:center;gap:12px}
-#error-screen .err-icon{font-size:52px}
-#error-screen h3{font-size:18px;font-weight:600;color:var(--ink)}
+#error-screen .err-icon{font-size:56px}
+#error-screen h3{font-size:18px;font-weight:700}
 #error-screen p{font-size:13px;color:var(--muted);line-height:1.6}
 
-/* ── HEADER ── */
-.header{background:var(--shop-color);padding:20px 18px 18px;color:#fff;position:relative;overflow:hidden}
-.header::after{content:'';position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08)}
-.header::before{content:'';position:absolute;right:40px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.06)}
-.shop-logo{width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px;position:relative;z-index:1}
-.shop-name{font-size:20px;font-weight:600;position:relative;z-index:1}
-.shop-addr{font-size:12px;opacity:.8;margin-top:3px;position:relative;z-index:1;display:flex;align-items:center;gap:4px}
+/* HEADER WITH BANNER */
+.header{position:relative;height:240px;overflow:hidden;background:#1E3A8A}
+.banner-slide{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity .8s ease;
+}
+.banner-slide.on{opacity:1}
+.header-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(15,23,42,.1) 0%,rgba(15,23,42,.65) 100%);
+  z-index:1;
+}
+.header-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:16px 20px 20px;z-index:2;
+  display:flex;align-items:flex-end;gap:14px;
+}
+.shop-avatar{
+  width:56px;height:56px;border-radius:16px;
+  background:rgba(255,255,255,.2);backdrop-filter:blur(8px);
+  border:2px solid rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+}
+.shop-info{flex:1}
+.shop-name{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.3px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.shop-addr{font-size:11px;color:rgba(255,255,255,.8);margin-top:3px;font-weight:500;display:flex;align-items:center;gap:4px}
+/* Banner dots */
+.banner-dots{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  display:flex;gap:5px;z-index:3;
+}
+.banner-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:all .3s}
+.banner-dot.on{background:#fff;width:14px;border-radius:3px}
 
-/* ── STEP INDICATOR ── */
-.steps{display:flex;align-items:center;padding:16px 18px 0;background:var(--card);border-bottom:1px solid var(--border)}
-.st-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding-bottom:12px;border-bottom:2px solid transparent;cursor:default}
-.st-item.on{border-bottom-color:var(--shop-color)}
-.st-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;transition:all .2s}
-.st-dot.done{background:var(--teal);color:#fff}
-.st-dot.on{background:var(--shop-color);color:#fff}
-.st-dot.off{background:var(--border);color:var(--muted)}
-.st-lbl{font-size:10px;font-weight:500;color:var(--muted)}
-.st-item.on .st-lbl{color:var(--shop-color);font-weight:600}
-.st-line{width:24px;height:1px;background:var(--border);flex-shrink:0;margin-bottom:14px}
-.st-line.done{background:var(--teal)}
+/* STEPS */
+.steps-wrap{padding:0 14px;margin-top:-20px;position:relative;z-index:10}
+.steps{
+  display:flex;align-items:center;
+  background:var(--card);border-radius:16px;
+  padding:14px 16px;box-shadow:var(--shadow-lg);
+}
+.st-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.st-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .25s}
+.st-dot.done{background:var(--green);color:#fff}
+.st-dot.on{background:var(--blue);color:#fff;box-shadow:0 0 0 4px var(--blue-light)}
+.st-dot.off{background:var(--bg);color:var(--muted)}
+.st-lbl{font-size:10px;font-weight:700;color:var(--muted)}
+.st-item.on .st-lbl{color:var(--blue)}
+.st-line{flex:1;height:2px;background:var(--border);margin:0 4px 14px;transition:background .25s}
+.st-line.done{background:var(--green)}
 
-/* ── SCROLL AREA ── */
-.scroll{flex:1;overflow-y:auto;padding:16px 16px 100px}
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;padding:14px 14px 120px}
 
-/* ── CARDS ── */
-.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:12px}
-.card-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:12px}
-.fld{margin-bottom:12px}
+/* SECTION TITLE */
+.sec-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:0 2px 12px}
+
+/* SERVICE GRID — 2 cột với ảnh */
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.svc-card{
+  background:var(--card);border-radius:16px;
+  overflow:hidden;box-shadow:var(--shadow);
+  border:2.5px solid transparent;transition:all .2s;cursor:pointer;
+}
+.svc-card.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.svc-img{
+  width:100%;height:100px;
+  background:var(--bg);
+  background-size:cover;background-position:center;
+  position:relative;
+}
+.svc-img-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 40%,rgba(15,23,42,.5));
+  opacity:0;transition:opacity .2s;
+}
+.svc-card.sel .svc-img-overlay{opacity:1}
+.svc-check-badge{
+  position:absolute;top:8px;right:8px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.3);border:2px solid rgba(255,255,255,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:transparent;transition:all .2s;
+}
+.svc-card.sel .svc-check-badge{background:var(--blue);border-color:var(--blue);color:#fff}
+.svc-body{padding:10px 12px 12px}
+.svc-name{font-size:13px;font-weight:800;color:var(--ink);line-height:1.3}
+.svc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:5px}
+.svc-dur{font-size:11px;color:var(--muted);font-weight:600}
+.svc-price{font-size:13px;font-weight:800;color:var(--blue)}
+/* Detail expand */
+.svc-detail{
+  display:none;padding:8px 12px 12px;
+  background:var(--blue-light);
+  border-top:1px solid rgba(59,130,246,.15);
+}
+.svc-card.sel .svc-detail{display:block;animation:fadeUp .2s ease}
+.svc-detail ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.svc-detail ul li{font-size:11px;color:var(--ink2);display:flex;align-items:flex-start;gap:5px;line-height:1.5;font-weight:600}
+.svc-detail ul li::before{content:'✓';color:var(--blue);font-weight:800;flex-shrink:0}
+
+/* FORM */
+.form-card{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:10px}
+.fld{margin-bottom:14px}
 .fld:last-child{margin-bottom:0}
-.fld label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:5px}
-.fld input{width:100%;padding:12px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:'Be Vietnam Pro',sans-serif;color:var(--ink);background:var(--card);transition:border-color .15s;-webkit-appearance:none}
-.fld input:focus{outline:none;border-color:var(--shop-color)}
+.fld label{font-size:11px;font-weight:800;color:var(--ink2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.fld input{
+  width:100%;padding:14px 16px;
+  border:2px solid var(--border);border-radius:12px;
+  font-size:15px;font-family:'Nunito',sans-serif;font-weight:600;
+  color:var(--ink);background:var(--card);transition:all .15s;
+  -webkit-appearance:none;
+}
+.fld input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-light)}
 
-/* ── SERVICE LIST ── */
-.svc-list{display:flex;flex-direction:column;gap:8px}
-.svc-wrap{border:1.5px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color .15s;margin-bottom:0}
-.svc-wrap.sel{border-color:var(--shop-color)}
-.svc-item{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;background:var(--card)}
-.svc-wrap.sel .svc-item{background:var(--shop-light)}
-.svc-item:active{opacity:.85}
-.svc-left{display:flex;align-items:center;gap:10px}
-.svc-icon{width:36px;height:36px;border-radius:9px;background:var(--shop-light);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:background .15s}
-.svc-wrap.sel .svc-icon{background:var(--shop-color);color:#fff}
-.svc-name{font-size:14px;font-weight:500}
-.svc-dur{font-size:12px;color:var(--muted);margin-top:1px}
-.svc-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;flex-shrink:0}
-.svc-wrap.sel .svc-check{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
-.svc-detail{display:none;padding:0 14px 13px 60px;background:var(--shop-light)}
-.svc-wrap.sel .svc-detail{display:block}
-.svc-detail ul{list-style:none;display:flex;flex-direction:column;gap:5px}
-.svc-detail ul li{font-size:12px;color:var(--ink);display:flex;align-items:flex-start;gap:6px;line-height:1.5}
-.svc-detail ul li::before{content:'✓';color:var(--shop-color);font-weight:700;flex-shrink:0}
-
-/* ── DATE SELECTOR ── */
+/* DATE SELECTOR */
 .date-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:14px}
 .date-scroll::-webkit-scrollbar{display:none}
-.date-btn{flex-shrink:0;width:56px;border:1.5px solid var(--border);border-radius:11px;padding:10px 6px;text-align:center;cursor:pointer;background:var(--card);transition:all .15s;-webkit-tap-highlight-color:transparent}
-.date-btn.sel{border-color:var(--shop-color);background:var(--shop-light)}
-.date-btn:active{transform:scale(.95)}
-.date-dow{font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:500}
-.date-d{font-size:18px;font-weight:600;color:var(--ink)}
-.date-btn.sel .date-dow,.date-btn.sel .date-d{color:var(--shop-color)}
+.date-btn{
+  flex-shrink:0;width:56px;
+  border:2px solid var(--border);border-radius:14px;
+  padding:10px 6px;text-align:center;cursor:pointer;
+  background:var(--card);transition:all .15s;box-shadow:var(--shadow);
+}
+.date-btn.sel{border-color:var(--blue);background:var(--blue);box-shadow:0 4px 14px rgba(59,130,246,.35)}
+.date-btn:active{transform:scale(.94)}
+.date-dow{font-size:10px;color:var(--muted);margin-bottom:3px;font-weight:700;text-transform:uppercase}
+.date-d{font-size:20px;font-weight:800;color:var(--ink)}
+.date-m{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600}
+.date-btn.sel .date-dow,.date-btn.sel .date-d,.date-btn.sel .date-m{color:#fff}
 
-/* ── TIME GRID ── */
+/* TIME GRID */
+.time-label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.tb{padding:11px 4px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-weight:500;text-align:center;cursor:pointer;background:var(--card);color:var(--ink);transition:all .15s;-webkit-tap-highlight-color:transparent}
-.tb:active{transform:scale(.95)}
-.tb.sel{background:var(--shop-color);border-color:var(--shop-color);color:#fff}
-.tb.blk{background:var(--bg);color:var(--border);text-decoration:line-through;cursor:not-allowed}
-.conflict{background:var(--tl);border:1px solid #7ADCBE;border-radius:9px;padding:9px 12px;font-size:12px;color:var(--td);margin-top:8px;display:none;line-height:1.5}
+.tb{
+  padding:12px 4px;border:2px solid var(--border);
+  border-radius:12px;font-size:13px;font-weight:700;
+  text-align:center;cursor:pointer;background:var(--card);
+  color:var(--ink);transition:all .15s;box-shadow:var(--shadow);
+}
+.tb:active{transform:scale(.93)}
+.tb.sel{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.tb.blk{background:var(--bg);color:var(--border);text-decoration:line-through;cursor:not-allowed;box-shadow:none;border-color:var(--border)}
+.conflict{background:#FEF2F2;border:1.5px solid #FCA5A5;border-radius:12px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:10px;display:none;line-height:1.5;font-weight:600}
 
-/* ── REVIEW ── */
-.rv-row{padding:9px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.rv-row:last-child{border-bottom:none}
-.rv-lbl{font-size:12px;color:var(--muted)}
-.rv-val{font-size:14px;font-weight:500;text-align:right;max-width:60%}
-.rv-val.hi{color:var(--shop-color);font-weight:600}
+/* REVIEW */
+.review-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+.rv-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
+.rv-row:last-child{border:none}
+.rv-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.rv-val{font-size:14px;font-weight:700;text-align:right;max-width:60%}
+.rv-val.hi{color:var(--blue)}
 
-/* ── SUCCESS ── */
-.success{background:var(--tl);border:1px solid #7ADCBE;border-radius:18px;padding:28px 20px;text-align:center;margin:8px 0;display:none}
-.success-icon{font-size:52px;display:block;margin-bottom:10px}
-.success h3{font-size:19px;font-weight:600;color:var(--td);margin-bottom:6px}
-.success p{font-size:13px;color:var(--teal);line-height:1.6}
-.gcal-pill{display:inline-flex;align-items:center;gap:5px;margin-top:12px;background:#fff;border:1px solid #7ADCBE;border-radius:30px;padding:5px 13px;font-size:12px;font-weight:500;color:var(--td)}
-.gc-dot{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+/* SUCCESS */
+.success{background:var(--card);border-radius:20px;padding:36px 24px;text-align:center;margin:8px 0;display:none;box-shadow:var(--shadow-lg);animation:fadeUp .3s ease}
+.success-icon{font-size:64px;display:block;margin-bottom:14px;animation:pop .4s ease .1s both}
+.success h3{font-size:22px;font-weight:800;margin-bottom:8px}
+.success p{font-size:14px;color:var(--muted);line-height:1.7;font-weight:500}
+.success-pill{display:inline-flex;align-items:center;gap:7px;margin-top:16px;background:var(--green-light);border-radius:30px;padding:8px 18px;font-size:13px;font-weight:700;color:var(--green)}
+.gc-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
 
-/* ── CTA ── */
-.cta-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(248,250,252,.92);backdrop-filter:blur(12px);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border)}
-.btn-main{width:100%;padding:15px;background:var(--shop-color);color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;transition:opacity .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+/* CTA BAR */
+.cta-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border)}
+.btn-main{width:100%;padding:16px;background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;letter-spacing:.2px;box-shadow:0 4px 16px rgba(59,130,246,.4)}
 .btn-main:active{opacity:.85;transform:scale(.98)}
-.btn-main:disabled{opacity:.4;cursor:not-allowed}
-.btn-back{width:100%;padding:12px;background:var(--card);color:var(--ink);border:1.5px solid var(--border);border-radius:13px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;margin-top:8px;-webkit-tap-highlight-color:transparent}
+.btn-main:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn-back{width:100%;padding:12px;margin-top:8px;background:transparent;color:var(--ink2);border:2px solid var(--border);border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s}
+.btn-back:active{background:var(--bg)}
 
-/* ── APP WRAPPER (ẩn cho đến khi load xong) ── */
 #app{display:none;flex-direction:column;flex:1}
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div id="loading">
-  <div class="spin"></div>
-  <p>Đang tải thông tin tiệm...</p>
-</div>
+<div id="loading"><div class="spin"></div><p>Đang tải thông tin tiệm...</p></div>
 
-<!-- ERROR -->
 <div id="error-screen">
   <div class="err-icon">😕</div>
   <h3>Không tìm thấy tiệm</h3>
-  <p id="error-msg">Link đặt lịch không hợp lệ hoặc tiệm chưa được kích hoạt.<br>Vui lòng liên hệ chủ tiệm để được hỗ trợ.</p>
+  <p id="error-msg">Link đặt lịch không hợp lệ.<br>Vui lòng liên hệ chủ tiệm.</p>
 </div>
 
-<!-- APP (được render động) -->
 <div id="app">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="shop-logo" id="shop-logo"></div>
-    <div class="shop-name" id="shop-name"></div>
-    <div class="shop-addr">📍 <span id="shop-addr"></span></div>
+  <!-- HEADER BANNER -->
+  <div class="header" id="header">
+    <div id="banner-wrap"></div>
+    <div class="header-overlay"></div>
+    <div class="banner-dots" id="banner-dots"></div>
+    <div class="header-content">
+      <div class="shop-avatar" id="shop-logo"></div>
+      <div class="shop-info">
+        <div class="shop-name" id="shop-name"></div>
+        <div class="shop-addr">📍 <span id="shop-addr"></span></div>
+      </div>
+    </div>
   </div>
 
   <!-- STEPS -->
-  <div class="steps" id="steps">
-    <div class="st-item on" id="si1"><div class="st-dot on" id="sd1">1</div><div class="st-lbl">Dịch vụ</div></div>
-    <div class="st-line" id="sl1"></div>
-    <div class="st-item" id="si2"><div class="st-dot off" id="sd2">2</div><div class="st-lbl">Thông tin</div></div>
-    <div class="st-line" id="sl2"></div>
-    <div class="st-item" id="si3"><div class="st-dot off" id="sd3">3</div><div class="st-lbl">Thời gian</div></div>
-    <div class="st-line" id="sl3"></div>
-    <div class="st-item" id="si4"><div class="st-dot off" id="sd4">4</div><div class="st-lbl">Xác nhận</div></div>
+  <div class="steps-wrap">
+    <div class="steps">
+      <div class="st-item on" id="si1"><div class="st-dot on" id="sd1">1</div><div class="st-lbl">Dịch vụ</div></div>
+      <div class="st-line" id="sl1"></div>
+      <div class="st-item" id="si2"><div class="st-dot off" id="sd2">2</div><div class="st-lbl">Thông tin</div></div>
+      <div class="st-line" id="sl2"></div>
+      <div class="st-item" id="si3"><div class="st-dot off" id="sd3">3</div><div class="st-lbl">Thời gian</div></div>
+      <div class="st-line" id="sl3"></div>
+      <div class="st-item" id="si4"><div class="st-dot off" id="sd4">4</div><div class="st-lbl">Xác nhận</div></div>
+    </div>
   </div>
 
   <div class="scroll" id="scroll">
 
-    <!-- STEP 1: DỊCH VỤ (render động) -->
+    <!-- STEP 1 -->
     <div id="s1">
-      <div class="card">
-        <div class="card-label">Chọn dịch vụ</div>
-        <div class="svc-list" id="svc-list"></div>
-      </div>
+      <div class="sec-title">Chọn dịch vụ</div>
+      <div class="svc-grid" id="svc-list"></div>
     </div>
 
-    <!-- STEP 2: THÔNG TIN -->
+    <!-- STEP 2 -->
     <div id="s2" style="display:none">
-      <div class="card">
-        <div class="card-label">Thông tin của bạn</div>
+      <div class="sec-title">Thông tin của bạn</div>
+      <div class="form-card">
         <div class="fld"><label>Họ và tên *</label><input id="cname" type="text" placeholder="Nguyễn Thị Lan" autocomplete="name"></div>
         <div class="fld"><label>Số điện thoại *</label><input id="cphone" type="tel" placeholder="0901 234 567" autocomplete="tel"></div>
-        <div class="fld"><label>Ghi chú (không bắt buộc)</label><input id="cnote" type="text" placeholder="Dị ứng tinh dầu, yêu cầu khác..."></div>
+        <div class="fld"><label>Ghi chú</label><input id="cnote" type="text" placeholder="Dị ứng tinh dầu, yêu cầu khác..."></div>
       </div>
     </div>
 
-    <!-- STEP 3: THỜI GIAN -->
+    <!-- STEP 3 -->
     <div id="s3" style="display:none">
-      <div class="card">
-        <div class="card-label">Chọn ngày</div>
-        <div class="date-scroll" id="date-scroll"></div>
-        <div class="card-label" style="margin-top:4px">Giờ trống – <span id="date-lbl" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div>
-        <div class="time-grid" id="tgrid"></div>
-        <div class="conflict" id="conflict">💡 <span id="cmsg"></span></div>
-      </div>
+      <div class="sec-title">Chọn ngày</div>
+      <div class="date-scroll" id="date-scroll"></div>
+      <div class="time-label">Giờ trống – <span id="date-lbl" style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink)"></span></div>
+      <div class="time-grid" id="tgrid"></div>
+      <div class="conflict" id="conflict">⚠️ <span id="cmsg"></span></div>
     </div>
 
-    <!-- STEP 4: XÁC NHẬN -->
+    <!-- STEP 4 -->
     <div id="s4" style="display:none">
-      <div class="card">
-        <div class="card-label">Xác nhận thông tin</div>
-        <div id="rv-content"></div>
-      </div>
+      <div class="sec-title">Xác nhận thông tin</div>
+      <div class="review-card" id="rv-content"></div>
     </div>
 
     <!-- SUCCESS -->
@@ -207,263 +282,260 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--in
       <span class="success-icon">🎉</span>
       <h3>Đặt lịch thành công!</h3>
       <p id="success-detail"></p>
-      <div class="gcal-pill"><span class="gc-dot"></span>Đã ghi vào lịch hẹn</div>
+      <div class="success-pill"><span class="gc-dot"></span>Đã ghi vào lịch hẹn</div>
       <br>
-      <button class="btn-back" style="margin-top:14px;border-radius:30px;border-color:var(--teal);color:var(--td)" onclick="resetAll()">Đặt lịch mới</button>
+      <button class="btn-back" style="margin-top:16px;border-radius:30px;border-color:var(--green);color:var(--green)" onclick="resetAll()">+ Đặt lịch mới</button>
     </div>
+  </div>
 
-  </div><!-- /scroll -->
-
-  <!-- CTA BAR -->
   <div class="cta-bar" id="cta-bar">
     <button class="btn-main" id="btn-main" onclick="nextStep()">Tiếp theo →</button>
     <button class="btn-back" id="btn-back" style="display:none" onclick="prevStep()">← Quay lại</button>
   </div>
-
-</div><!-- /app -->
+</div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-//  CONFIG ĐỘNG — Load từ /shops/{shopId}.json trên GitHub
-// ════════════════════════════════════════════════════════════
+// ── DEFAULT BANNER IMAGES (Quỳnh Spa) ────────────────────────
+const DEFAULT_BANNERS = [
+  'https://lh3.googleusercontent.com/d/1orkQjhSk1-T_GDkDEFAxoAk836yp4lXC',
+  'https://lh3.googleusercontent.com/d/1k9J7dbj-fF9ta9sl3Di3P_bCRLFY73HM',
+  'https://lh3.googleusercontent.com/d/1utGp0F-RuUsAZB0kmMn10yCke1sumqcc'
+];
 
-// ════════════════════════════════════════════════════════════
-//  KHỞI ĐỘNG — Đọc ?shop= từ URL, load config
-// ════════════════════════════════════════════════════════════
-
-const DAYS     = ['CN','T2','T3','T4','T5','T6','T7'];
-const DAYSFULL = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
-
-let CONFIG = null;
-let curStep = 1, selService = null, selDate = null, selTime = null;
+const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
+const DAYSFULL=['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+let CONFIG=null, curStep=1, selService=null, selDate=null, selTime=null;
+let curBanner=0, bannerTimer=null;
 
 function getShopId(){
-  const p = new URLSearchParams(window.location.search);
-  return p.get('shop') || p.get('id') || null;
+  const p=new URLSearchParams(window.location.search);
+  return p.get('shop')||p.get('id')||null;
 }
 
-function applyTheme(cfg){
-  const r = document.documentElement.style;
-  r.setProperty('--shop-color', '#3B82F6');
-  r.setProperty('--shop-light', '#EFF6FF');
-  r.setProperty('--shop-dark',  '#1D4ED8');
+function initBanner(banners){
+  const wrap=document.getElementById('banner-wrap');
+  const dots=document.getElementById('banner-dots');
+  wrap.innerHTML=''; dots.innerHTML='';
+  banners.forEach((url,i)=>{
+    const slide=document.createElement('div');
+    slide.className='banner-slide'+(i===0?' on':'');
+    slide.style.backgroundImage=`url('${url}')`;
+    wrap.appendChild(slide);
+    const dot=document.createElement('div');
+    dot.className='banner-dot'+(i===0?' on':'');
+    dot.onclick=()=>goBanner(i);
+    dots.appendChild(dot);
+  });
+  if(banners.length>1){
+    if(bannerTimer) clearInterval(bannerTimer);
+    bannerTimer=setInterval(()=>goBanner((curBanner+1)%banners.length),4000);
+  }
 }
 
-function renderHeader(cfg){
-  document.title = cfg.shopName + ' – Đặt lịch online';
-  document.getElementById('shop-logo').textContent = cfg.shopEmoji;
-  document.getElementById('shop-name').textContent = cfg.shopName;
-  document.getElementById('shop-addr').textContent = cfg.shopAddress;
+function goBanner(n){
+  const slides=document.querySelectorAll('.banner-slide');
+  const dots=document.querySelectorAll('.banner-dot');
+  if(!slides.length) return;
+  slides[curBanner]?.classList.remove('on');
+  dots[curBanner]?.classList.remove('on');
+  curBanner=n;
+  slides[curBanner]?.classList.add('on');
+  dots[curBanner]?.classList.add('on');
+}
+
+function initApp(cfg){
+  CONFIG=cfg;
+  document.title=cfg.shopName+' – Đặt lịch online';
+  document.getElementById('shop-logo').textContent=cfg.shopEmoji;
+  document.getElementById('shop-name').textContent=cfg.shopName;
+  document.getElementById('shop-addr').textContent=cfg.shopAddress;
+  // Dùng banners từ JSON nếu có, fallback về DEFAULT
+  const banners=cfg.banners||DEFAULT_BANNERS;
+  initBanner(banners);
+  renderServices(cfg);
+  document.getElementById('app').style.display='flex';
+  updateCta();
 }
 
 function renderServices(cfg){
-  const list = document.getElementById('svc-list');
-  list.innerHTML = '';
-  cfg.services.forEach(svc => {
-    const priceK = (svc.price/1000).toFixed(0) + 'k';
-    const detailHtml = svc.details && svc.details.length
-      ? '<div class="svc-detail"><ul>' + svc.details.map(d=>'<li>'+d+'</li>').join('') + '</ul></div>'
-      : '';
-    const wrap = document.createElement('div');
-    wrap.className = 'svc-wrap';
-    wrap.innerHTML = `
-      <div class="svc-item">
-        <div class="svc-left">
-          <div class="svc-icon">${svc.icon}</div>
-          <div>
-            <div class="svc-name">${svc.name}</div>
-            <div class="svc-dur">${svc.duration} phút · ${priceK}</div>
-          </div>
+  const list=document.getElementById('svc-list');
+  list.innerHTML='';
+  // Ảnh placeholder mặc định cho từng dịch vụ nếu không có trong JSON
+  const placeholders=[
+    'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=300&q=70',
+    'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=70',
+    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=300&q=70',
+    'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=300&q=70',
+  ];
+  cfg.services.forEach((svc,idx)=>{
+    const priceK=(svc.price/1000).toFixed(0)+'k';
+    const imgUrl=svc.image||placeholders[idx%placeholders.length];
+    const detailHtml=svc.details&&svc.details.length
+      ?'<div class="svc-detail"><ul>'+svc.details.map(d=>'<li>'+d+'</li>').join('')+'</ul></div>'
+      :'';
+    const card=document.createElement('div');
+    card.className='svc-card';
+    card.innerHTML=`
+      <div class="svc-img" style="background-image:url('${imgUrl}')">
+        <div class="svc-img-overlay"></div>
+        <div class="svc-check-badge">✓</div>
+      </div>
+      <div class="svc-body">
+        <div class="svc-name">${svc.icon} ${svc.name}</div>
+        <div class="svc-meta">
+          <span class="svc-dur">⏱ ${svc.duration}ph</span>
+          <span class="svc-price">${priceK}đ</span>
         </div>
-        <div class="svc-check">✓</div>
       </div>
       ${detailHtml}`;
-    wrap.onclick = () => selSvc(wrap, svc.name, svc.duration, svc.price, svc.icon);
-    list.appendChild(wrap);
+    card.onclick=()=>selSvc(card,svc.name,svc.duration,svc.price,svc.icon);
+    list.appendChild(card);
   });
 }
 
 async function loadShop(){
-  const shopId = getShopId();
+  const shopId=getShopId();
   if(!shopId){
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error-screen').style.display = 'flex';
-    document.getElementById('error-msg').textContent = 'Link không hợp lệ. Vui lòng liên hệ chủ tiệm.';
+    document.getElementById('loading').style.display='none';
+    document.getElementById('error-screen').style.display='flex';
     return;
   }
-  // Thử nhiều path để đảm bảo tìm được file JSON
-  const base = location.href.split('/booking-customer.html')[0];
-  const paths = [
-    base + '/shops/' + shopId + '.json',
-    '/shops/' + shopId + '.json',
-    'shops/' + shopId + '.json'
-  ];
-  let cfg = null;
+  const base=location.href.split('/booking-customer.html')[0];
+  const paths=[base+'/shops/'+shopId+'.json','/shops/'+shopId+'.json','shops/'+shopId+'.json'];
+  let cfg=null;
   for(const path of paths){
-    try{
-      const res = await fetch(path);
-      if(res.ok){ cfg = await res.json(); break; }
-    }catch(e){}
+    try{const res=await fetch(path);if(res.ok){cfg=await res.json();break;}}catch(e){}
   }
-  document.getElementById('loading').style.display = 'none';
-  if(cfg){
-    initApp(cfg);
-  } else {
-    document.getElementById('error-screen').style.display = 'flex';
-    document.getElementById('error-msg').textContent = 'Không tìm thấy tiệm "' + shopId + '". Vui lòng kiểm tra lại link.';
+  document.getElementById('loading').style.display='none';
+  if(cfg) initApp(cfg);
+  else{
+    document.getElementById('error-screen').style.display='flex';
+    document.getElementById('error-msg').textContent='Không tìm thấy tiệm "'+shopId+'".';
   }
 }
 
-function initApp(cfg){
-  CONFIG = cfg;
-  applyTheme(cfg);
-  renderHeader(cfg);
-  renderServices(cfg);
-  document.getElementById('app').style.display = 'flex';
-  updateCta();
-}
-
-// ════════════════════════════════════════════════════════════
-//  LOGIC ĐẶT LỊCH
-// ════════════════════════════════════════════════════════════
-
-function selSvc(wrap, name, dur, price, icon){
-  document.querySelectorAll('.svc-wrap').forEach(e => e.classList.remove('sel'));
-  wrap.classList.add('sel');
-  selService = { name, dur, price, icon };
+function selSvc(card,name,dur,price,icon){
+  document.querySelectorAll('.svc-card').forEach(e=>e.classList.remove('sel'));
+  card.classList.add('sel');
+  selService={name,dur,price,icon};
   updateCta();
 }
 
 function buildDates(){
-  const wrap = document.getElementById('date-scroll');
-  wrap.innerHTML = '';
-  const today = new Date();
-  for(let i = 0; i < 14; i++){
-    const d = new Date(today); d.setDate(today.getDate()+i);
-    const btn = document.createElement('div');
-    btn.className = 'date-btn';
-    btn.innerHTML = `<div class="date-dow">${DAYS[d.getDay()]}</div><div class="date-d">${d.getDate()}</div><div class="date-dow">${d.getMonth()+1}/${d.getFullYear().toString().slice(2)}</div>`;
-    btn.onclick = () => pickDate(btn, d);
+  const wrap=document.getElementById('date-scroll');
+  wrap.innerHTML='';
+  const today=new Date();
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(today.getDate()+i);
+    const btn=document.createElement('div');
+    btn.className='date-btn';
+    btn.innerHTML=`<div class="date-dow">${DAYS[d.getDay()]}</div><div class="date-d">${d.getDate()}</div><div class="date-m">${d.getMonth()+1}/${String(d.getFullYear()).slice(2)}</div>`;
+    btn.onclick=()=>pickDate(btn,d);
     wrap.appendChild(btn);
-    if(i===0){ pickDate(btn, d); }
+    if(i===0) pickDate(btn,d);
   }
 }
 
-function pickDate(btn, d){
-  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('sel'));
+function pickDate(btn,d){
+  document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
-  selDate = d;
-  document.getElementById('date-lbl').textContent = DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);
+  selDate=d;
+  document.getElementById('date-lbl').textContent=DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);
   buildSlots();
 }
 
-
-const bookedCache = {};
-
+const bookedCache={};
 async function buildSlots(){
-  selTime = null;
-  updateCta();
-  document.getElementById('conflict').style.display = 'none';
-  const g = document.getElementById('tgrid');
-  g.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ Đang kiểm tra lịch trống...</div>';
-  const dateStr = selDate.toISOString().slice(0,10);
-  const shopId  = CONFIG.shopId || '';
-  let bookedSlots = [];
-  if(bookedCache[dateStr] !== undefined){
-    bookedSlots = bookedCache[dateStr];
-  } else {
-    try { bookedSlots = await fetchBookedJsonp(shopId, dateStr); }
-    catch(e){ bookedSlots = []; }
-    bookedCache[dateStr] = bookedSlots;
+  selTime=null;updateCta();
+  document.getElementById('conflict').style.display='none';
+  const g=document.getElementById('tgrid');
+  g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px;font-weight:600">⏳ Đang kiểm tra lịch trống...</div>';
+  const dateStr=selDate.toISOString().slice(0,10);
+  const shopId=CONFIG.shopId||'';
+  let bookedSlots=[];
+  if(bookedCache[dateStr]!==undefined) bookedSlots=bookedCache[dateStr];
+  else{
+    try{bookedSlots=await fetchBookedJsonp(shopId,dateStr);}catch(e){bookedSlots=[];}
+    bookedCache[dateStr]=bookedSlots;
   }
-  g.innerHTML = '';
-  CONFIG.slots.forEach(s => {
-    const hardBlocked   = CONFIG.blockedSlots.includes(s);
-    const alreadyBooked = bookedSlots.includes(s);
-    const isBlocked     = hardBlocked || alreadyBooked;
-    const b = document.createElement('div');
-    b.className = 'tb' + (isBlocked ? ' blk' : '');
-    b.textContent = s;
-    if(isBlocked) b.title = alreadyBooked ? 'Giờ này đã có khách đặt' : 'Giờ này không khả dụng';
-    else b.onclick = () => pickTime(b, s);
+  g.innerHTML='';
+  CONFIG.slots.forEach(s=>{
+    const isBlocked=CONFIG.blockedSlots.includes(s)||bookedSlots.includes(s);
+    const b=document.createElement('div');
+    b.className='tb'+(isBlocked?' blk':'');
+    b.textContent=s;
+    if(isBlocked) b.title=bookedSlots.includes(s)?'Đã có khách đặt':'Không khả dụng';
+    else b.onclick=()=>pickTime(b,s);
     g.appendChild(b);
   });
-  if(selTime && bookedSlots.includes(selTime)){
-    selTime = null;
-    document.getElementById('cmsg').textContent = 'Giờ bạn chọn vừa được người khác đặt. Vui lòng chọn giờ khác.';
-    document.getElementById('conflict').style.display = 'block';
-    updateCta();
-  }
 }
 
-function fetchBookedJsonp(shopId, date){
-  return new Promise((resolve, reject) => {
-    const cbName = '_be_' + Date.now();
-    const script = document.createElement('script');
-    const url = API_URL + '?action=getBooked&shopId=' + encodeURIComponent(shopId) + '&date=' + encodeURIComponent(date) + '&callback=' + cbName;
-    const timer = setTimeout(() => { cleanup(); reject(new Error('timeout')); }, 8000);
-    window[cbName] = function(data){ cleanup(); resolve(Array.isArray(data.booked) ? data.booked : []); };
-    function cleanup(){ clearTimeout(timer); delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); }
-    script.onerror = () => { cleanup(); reject(new Error('script error')); };
-    script.src = url;
-    document.head.appendChild(script);
+function fetchBookedJsonp(shopId,date){
+  return new Promise((resolve,reject)=>{
+    const cb='_be_'+Date.now();
+    const script=document.createElement('script');
+    const url=API_URL+'?action=getBooked&shopId='+encodeURIComponent(shopId)+'&date='+encodeURIComponent(date)+'&callback='+cb;
+    const timer=setTimeout(()=>{cleanup();reject(new Error('timeout'));},8000);
+    window[cb]=function(data){cleanup();resolve(Array.isArray(data.booked)?data.booked:[]);};
+    function cleanup(){clearTimeout(timer);delete window[cb];if(script.parentNode)script.parentNode.removeChild(script);}
+    script.onerror=()=>{cleanup();reject(new Error('error'));};
+    script.src=url;document.head.appendChild(script);
   });
 }
 
-function pickTime(btn, t){
-  document.querySelectorAll('.tb').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
-  selTime = t;
-  document.getElementById('conflict').style.display = 'none';
+function pickTime(btn,t){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');selTime=t;
+  document.getElementById('conflict').style.display='none';
   updateCta();
 }
 
 function updateCta(){
-  const btn  = document.getElementById('btn-main');
-  const back = document.getElementById('btn-back');
+  const btn=document.getElementById('btn-main');
+  const back=document.getElementById('btn-back');
   if(!btn) return;
-  back.style.display = curStep > 1 ? 'block' : 'none';
-  if(curStep===1){ btn.disabled = !selService; btn.textContent = 'Tiếp theo →'; }
-  else if(curStep===2){ btn.disabled = false;  btn.textContent = 'Tiếp theo →'; }
-  else if(curStep===3){ btn.disabled = !selTime; btn.textContent = 'Xem lại →'; }
-  else if(curStep===4){ btn.disabled = false;  btn.textContent = '✓ Xác nhận đặt lịch'; }
+  back.style.display=curStep>1?'block':'none';
+  if(curStep===1){btn.disabled=!selService;btn.textContent='Tiếp theo →';}
+  else if(curStep===2){btn.disabled=false;btn.textContent='Tiếp theo →';}
+  else if(curStep===3){btn.disabled=!selTime;btn.textContent='Xem lại →';}
+  else if(curStep===4){btn.disabled=false;btn.textContent='✓ Xác nhận đặt lịch';}
 }
 
 function nextStep(){
   if(curStep===2){
-    const nm = document.getElementById('cname').value.trim();
-    const ph = document.getElementById('cphone').value.trim();
-    if(!nm || !ph){ shakeInput(); return; }
+    const nm=document.getElementById('cname').value.trim();
+    const ph=document.getElementById('cphone').value.trim();
+    if(!nm||!ph){shakeInput();return;}
   }
-  if(curStep===4){ submitBooking(); return; }
+  if(curStep===4){submitBooking();return;}
   goStep(curStep+1);
 }
-function prevStep(){ goStep(curStep-1); }
+function prevStep(){goStep(curStep-1);}
 
 function goStep(n){
-  document.getElementById('s'+curStep).style.display = 'none';
-  curStep = n;
-  document.getElementById('s'+curStep).style.display = 'block';
+  document.getElementById('s'+curStep).style.display='none';
+  curStep=n;
+  document.getElementById('s'+curStep).style.display='block';
   if(n===3) buildDates();
   if(n===4) buildReview();
-  for(let i=1; i<=4; i++){
-    const dot  = document.getElementById('sd'+i);
-    const si   = document.getElementById('si'+i);
-    const line = document.getElementById('sl'+i);
-    if(i<n){  dot.className='st-dot done'; dot.textContent='✓'; si.className='st-item'; }
-    else if(i===n){ dot.className='st-dot on'; dot.textContent=i; si.className='st-item on'; }
-    else{ dot.className='st-dot off'; dot.textContent=i; si.className='st-item'; }
-    if(line) line.className = 'st-line'+(i<n?' done':'');
+  for(let i=1;i<=4;i++){
+    const dot=document.getElementById('sd'+i);
+    const si=document.getElementById('si'+i);
+    const line=document.getElementById('sl'+i);
+    if(i<n){dot.className='st-dot done';dot.textContent='✓';si.className='st-item';}
+    else if(i===n){dot.className='st-dot on';dot.textContent=i;si.className='st-item on';}
+    else{dot.className='st-dot off';dot.textContent=i;si.className='st-item';}
+    if(line) line.className='st-line'+(i<n?' done':'');
   }
   updateCta();
-  document.getElementById('scroll').scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('scroll').scrollTo({top:0,behavior:'smooth'});
 }
 
 function buildReview(){
-  const d  = selDate;
-  const ds = DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
-  const note = document.getElementById('cnote').value.trim();
-  document.getElementById('rv-content').innerHTML = `
+  const d=selDate;
+  const ds=DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+  const note=document.getElementById('cnote').value.trim();
+  document.getElementById('rv-content').innerHTML=`
     <div class="rv-row"><span class="rv-lbl">Cửa hàng</span><span class="rv-val">${CONFIG.shopEmoji} ${CONFIG.shopName}</span></div>
     <div class="rv-row"><span class="rv-lbl">Dịch vụ</span><span class="rv-val">${selService.icon} ${selService.name}</span></div>
     <div class="rv-row"><span class="rv-lbl">Thời gian</span><span class="rv-val">${selService.dur} phút</span></div>
@@ -471,122 +543,62 @@ function buildReview(){
     <div class="rv-row"><span class="rv-lbl">Khách hàng</span><span class="rv-val">${document.getElementById('cname').value}</span></div>
     <div class="rv-row"><span class="rv-lbl">Số điện thoại</span><span class="rv-val">${document.getElementById('cphone').value}</span></div>
     <div class="rv-row"><span class="rv-lbl">Giá dịch vụ</span><span class="rv-val hi">${(selService.price/1000).toFixed(0)}k đ</span></div>
-    ${note ? `<div class="rv-row"><span class="rv-lbl">Ghi chú</span><span class="rv-val">${note}</span></div>` : ''}
-  `;
+    ${note?`<div class="rv-row"><span class="rv-lbl">Ghi chú</span><span class="rv-val">${note}</span></div>`:''}`;
 }
 
 async function submitBooking(){
-  const btn = document.getElementById('btn-main');
-  btn.disabled = true;
-  btn.textContent = '⏳ Đang gửi...';
-
-  const d   = selDate;
-  const ds  = DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);
-  const dateStr = d.toISOString().slice(0,10);
-
-  const payload = {
-    shopId:        CONFIG.shopId || CONFIG.shopName,
-    customerName:  document.getElementById('cname').value.trim(),
-    customerPhone: document.getElementById('cphone').value.trim(),
-    service:       selService.icon + ' ' + selService.name,
-    duration:      selService.dur,
-    price:         selService.price,
-    date:          dateStr,
-    time:          selTime,
-    note:          document.getElementById('cnote').value.trim()
+  const btn=document.getElementById('btn-main');
+  btn.disabled=true;btn.textContent='⏳ Đang gửi...';
+  const d=selDate;
+  const ds=DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);
+  const payload={
+    shopId:CONFIG.shopId||CONFIG.shopName,
+    customerName:document.getElementById('cname').value.trim(),
+    customerPhone:document.getElementById('cphone').value.trim(),
+    service:selService.icon+' '+selService.name,
+    duration:selService.dur,price:selService.price,
+    date:selDate.toISOString().slice(0,10),time:selTime,
+    note:document.getElementById('cnote').value.trim()
   };
-
-  try {
-    await fetch(API_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      headers:{ 'Content-Type': 'application/json' },
-      body:   JSON.stringify(payload)
-    });
-    // no-cors không đọc được response nhưng request đã gửi thành công
+  try{
+    await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     showSuccess(ds);
-  } catch(err) {
-    btn.disabled = false;
-    btn.textContent = '✓ Xác nhận đặt lịch';
+  }catch(err){
+    btn.disabled=false;btn.textContent='✓ Xác nhận đặt lịch';
     alert('Có lỗi xảy ra, vui lòng thử lại!');
   }
 }
 
 function showSuccess(ds){
-  document.getElementById('s4').style.display = 'none';
-  document.getElementById('cta-bar').style.display = 'none';
-  document.getElementById('success').style.display = 'block';
-  document.getElementById('success-detail').textContent =
-    `${document.getElementById('cname').value} – ${selService.name} lúc ${selTime}, ${ds}`;
-  document.querySelector('.steps').style.display = 'none';
+  document.getElementById('s4').style.display='none';
+  document.getElementById('cta-bar').style.display='none';
+  document.getElementById('success').style.display='block';
+  document.getElementById('success-detail').textContent=`${document.getElementById('cname').value} – ${selService.name} lúc ${selTime}, ${ds}`;
+  document.querySelector('.steps-wrap').style.display='none';
 }
 
 function resetAll(){
-  curStep=1; selService=null; selDate=null; selTime=null;
-  document.getElementById('success').style.display = 'none';
-  document.getElementById('cta-bar').style.display = 'block';
-  document.querySelector('.steps').style.display = 'flex';
-  document.getElementById('cname').value = '';
-  document.getElementById('cphone').value = '';
-  document.getElementById('cnote').value = '';
-  document.querySelectorAll('.svc-item').forEach(e => e.classList.remove('sel'));
+  curStep=1;selService=null;selDate=null;selTime=null;
+  document.getElementById('success').style.display='none';
+  document.getElementById('cta-bar').style.display='block';
+  document.querySelector('.steps-wrap').style.display='block';
+  ['cname','cphone','cnote'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.svc-card').forEach(e=>e.classList.remove('sel'));
   goStep(1);
 }
 
 function shakeInput(){
-  ['cname','cphone'].forEach(id => {
-    const el = document.getElementById(id);
+  ['cname','cphone'].forEach(id=>{
+    const el=document.getElementById(id);
     if(!el.value.trim()){
-      el.style.borderColor = '#E5484D';
-      el.style.animation = 'shake .3s';
-      setTimeout(()=>{ el.style.borderColor=''; el.style.animation=''; }, 600);
+      el.style.borderColor='var(--red)';
+      el.style.animation='shake .3s';
+      setTimeout(()=>{el.style.borderColor='';el.style.animation='';},600);
     }
   });
 }
 
-// ════════════════════════════════════════════════════════════
-//  JSONP helper — bypass CORS cho Google Apps Script GET
-// ════════════════════════════════════════════════════════════
-function fetchBookedJsonp(shopId, date){
-  return new Promise((resolve, reject) => {
-    const cbName = '_be_' + Date.now();
-    const script = document.createElement('script');
-    const url = API_URL
-      + '?action=getBooked'
-      + '&shopId=' + encodeURIComponent(shopId)
-      + '&date='   + encodeURIComponent(date)
-      + '&callback=' + cbName;
-
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('timeout'));
-    }, 8000);
-
-    window[cbName] = function(data){
-      cleanup();
-      resolve(Array.isArray(data.booked) ? data.booked : []);
-    };
-
-    function cleanup(){
-      clearTimeout(timer);
-      delete window[cbName];
-      if(script.parentNode) script.parentNode.removeChild(script);
-    }
-
-    script.onerror = () => { cleanup(); reject(new Error('script error')); };
-    script.src = url;
-    document.head.appendChild(script);
-  });
-}
-
-// ════════════════════════════════════════════════════════════
-//  GOOGLE SHEETS API
-// ════════════════════════════════════════════════════════════
-const API_URL = 'https://script.google.com/macros/s/AKfycbypYjTHoh30O599O5zHEZWpWJRGoRanGRkdLWocbOo2rKq5OCBF9oVmeljXq7o4vteH/exec';
-
-// ════════════════════════════════════════════════════════════
-//  KHỞI CHẠY
-// ════════════════════════════════════════════════════════════
+const API_URL='https://script.google.com/macros/s/AKfycbypYjTHoh30O599O5zHEZWpWJRGoRanGRkdLWocbOo2rKq5OCBF9oVmeljXq7o4vteH/exec';
 loadShop();
 </script>
 </body>
