@@ -308,9 +308,35 @@ const DAYSFULL=['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','
 let CONFIG=null, curStep=1, selService=null, selDate=null, selTime=null;
 let curBanner=0, bannerTimer=null;
 
+// ── SUPABASE CONFIG (chỉ dùng anon key, an toàn để nhúng public) ──
+const SUPABASE_URL='https://vxzhcrlavjhzhmwkakjz.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4emhjcmxhdmpoemhtd2tha2p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODg4MzQsImV4cCI6MjA5NDc2NDgzNH0.vxftFMAAY1PJJ5uYd1Uq7hlnOfW3rI1e3e0mdV9WdgA';
+
 function getShopId(){
   const p=new URLSearchParams(window.location.search);
   return p.get('shop')||p.get('id')||null;
+}
+
+// Lấy shop_id (uuid) + danh sách services (kèm uuid id) trực tiếp từ Supabase
+async function fetchServicesFromSupabase(shopSlug){
+  const headers={'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY};
+  // 1. Tìm shop theo slug (shopId dùng trong URL, vd "quynhspa")
+  const shopRes=await fetch(
+    `${SUPABASE_URL}/rest/v1/shops?slug=eq.${encodeURIComponent(shopSlug)}&select=id,name,address`,
+    {headers}
+  );
+  if(!shopRes.ok) return null;
+  const shops=await shopRes.json();
+  if(!shops.length) return null;
+  const shop=shops[0];
+  // 2. Lấy services thuộc shop đó, kèm id thật (uuid)
+  const svcRes=await fetch(
+    `${SUPABASE_URL}/rest/v1/services?shop_id=eq.${shop.id}&select=id,name,price,duration_min&order=price.asc`,
+    {headers}
+  );
+  if(!svcRes.ok) return null;
+  const services=await svcRes.json();
+  return {shop,services};
 }
 
 function initBanner(banners){
@@ -389,7 +415,7 @@ function renderServices(cfg){
         </div>
       </div>
       ${detailHtml}`;
-    card.onclick=()=>selSvc(card,svc.name,svc.duration,svc.price,svc.icon);
+    card.onclick=()=>selSvc(card,svc.id,svc.name,svc.duration,svc.price,svc.icon);
     list.appendChild(card);
   });
 }
@@ -407,6 +433,37 @@ async function loadShop(){
   for(const path of paths){
     try{const res=await fetch(path);if(res.ok){cfg=await res.json();break;}}catch(e){}
   }
+
+  // ── Gọi Supabase lấy UUID thật + dữ liệu mới nhất cho services ──
+  // JSON tĩnh vẫn giữ để hiển thị banner/icon/details (nội dung trình bày),
+  // nhưng id/price/duration luôn lấy từ Supabase (nguồn sự thật duy nhất).
+  if(cfg){
+    try{
+      const live=await fetchServicesFromSupabase(shopId);
+      if(live && live.services && live.services.length){
+        cfg.shopUuid=live.shop.id; // lưu lại để dùng khi submit booking
+        const staticByName={};
+        (cfg.services||[]).forEach(s=>{staticByName[s.name.trim()]=s;});
+        cfg.services=live.services.map(svc=>{
+          const extra=staticByName[svc.name.trim()]||{};
+          return{
+            id:svc.id,                       // UUID thật — bắt buộc phải có
+            name:svc.name,
+            duration:svc.duration_min,
+            price:svc.price,
+            icon:extra.icon||'💆',
+            image:extra.image,
+            details:extra.details
+          };
+        });
+      }
+      // Nếu Supabase lỗi/không trả được gì: giữ nguyên cfg.services từ JSON tĩnh
+      // (booking vẫn chạy nhưng sẽ thiếu service_id — sẽ cảnh báo ở selSvc/submit)
+    }catch(e){
+      console.warn('Không lấy được services từ Supabase, dùng tạm JSON tĩnh:',e);
+    }
+  }
+
   document.getElementById('loading').style.display='none';
   if(cfg) initApp(cfg);
   else{
@@ -415,10 +472,11 @@ async function loadShop(){
   }
 }
 
-function selSvc(card,name,dur,price,icon){
+function selSvc(card,id,name,dur,price,icon){
   document.querySelectorAll('.svc-card').forEach(e=>e.classList.remove('sel'));
   card.classList.add('sel');
-  selService={name,dur,price,icon};
+  selService={id,name,dur,price,icon};
+  if(!id) console.warn('⚠️ Dịch vụ "'+name+'" không có service_id (Supabase) — booking sẽ thiếu service_id khi lưu.');
   updateCta();
 }
 
@@ -554,8 +612,10 @@ async function submitBooking(){
   const ds=DAYSFULL[d.getDay()]+', '+d.getDate()+'/'+(d.getMonth()+1);
   const payload={
     shopId:CONFIG.shopId||CONFIG.shopName,
+    shopUuid:CONFIG.shopUuid||'',
     customerName:document.getElementById('cname').value.trim(),
     customerPhone:document.getElementById('cphone').value.trim(),
+    serviceId:selService.id||'',
     service:selService.icon+' '+selService.name,
     duration:selService.dur,price:selService.price,
     date:selDate.toISOString().slice(0,10),time:selTime,
