@@ -19,93 +19,10 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-width:430px;margin:0 auto;min-height:100vh;font-size:15px}
+@keyframes kbzoom{from{transform:scale(1)}to{transform:scale(1.07)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── LOGIN ── */
-#login{
-  min-height:100vh;display:flex;flex-direction:column;
-  position:relative;overflow:hidden;
-}
-/* Background slideshow */
-.ls-bg{
-  position:absolute;inset:0;z-index:0;
-}
-.ls-slide{
-  position:absolute;inset:0;
-  background-size:cover;background-position:center;
-  opacity:0;transition:opacity 1s ease;
-  animation:kbzoom 8s ease-in-out infinite alternate;
-}
-.ls-slide.on{opacity:1}
-@keyframes kbzoom{
-  from{transform:scale(1)}
-  to{transform:scale(1.08)}
-}
-.ls-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(
-    to bottom,
-    rgba(15,23,42,.05) 0%,
-    rgba(15,23,42,.1) 40%,
-    rgba(15,23,42,.55) 70%,
-    rgba(15,23,42,.82) 100%
-  );
-}
-/* Dots */
-.ls-dots{
-  position:absolute;top:52px;left:50%;transform:translateX(-50%);
-  display:flex;gap:6px;z-index:2;
-}
-.ls-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:rgba(255,255,255,.4);transition:all .3s;cursor:pointer;
-}
-.ls-dot.on{background:#fff;width:16px;border-radius:3px}
-/* Content */
-.login-top{
-  flex:1;display:flex;flex-direction:column;justify-content:flex-end;
-  padding:0 28px 32px;position:relative;z-index:1;
-}
-.login-logo{
-  width:64px;height:64px;
-  background:rgba(255,255,255,.15);
-  backdrop-filter:blur(12px);
-  border:1.5px solid rgba(255,255,255,.25);
-  border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin-bottom:20px;
-}
-.login-top h2{font-size:30px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.5px;text-shadow:0 2px 12px rgba(0,0,0,.3)}
-.login-top p{font-size:16px;color:rgba(255,255,255,.75);line-height:1.6;font-weight:500}
-.login-card{
-  background:var(--card);border-radius:28px 28px 0 0;
-  padding:28px 24px 40px;
-  position:relative;z-index:1;
-}
-.login-label{font-size:16px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:8px}
-.login-input{
-  width:100%;padding:16px;
-  border:2px solid var(--border);border-radius:14px;
-  font-size:16px;font-family:'Nunito',sans-serif;
-  font-weight:700;color:var(--ink);outline:none;
-  transition:all .15s;margin-bottom:12px;
-}
-.login-input:focus{border-color:var(--sc);box-shadow:0 0 0 4px var(--sl)}
-.demo-hint{
-  background:var(--sl);border-radius:12px;padding:12px 14px;
-  font-size:16px;color:var(--sc);line-height:1.8;
-  margin-bottom:16px;font-weight:600;
-}
-.demo-hint code{font-family:monospace;background:rgba(59,130,246,.1);padding:1px 5px;border-radius:4px}
-.login-btn{
-  width:100%;padding:17px;
-  background:linear-gradient(135deg,var(--sd),var(--sc));
-  color:#fff;border:none;border-radius:14px;
-  font-size:16px;font-weight:800;cursor:pointer;
-  font-family:'Nunito',sans-serif;
-  box-shadow:0 4px 16px rgba(59,130,246,.4);
-  -webkit-tap-highlight-color:transparent;
-}
-.login-btn:active{opacity:.85;transform:scale(.98)}
+/* Login CSS replaced by auth-wrap */
 
 /* ── APP ── */
 #app{display:none;flex-direction:column;min-height:100vh}
@@ -357,7 +274,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
 }
 .banner-slide{
   position:absolute;inset:0;
-  background-size:cover;background-position:center;
+  background-size:cover;background-position:center 20%;
   opacity:0;transition:opacity .8s ease;
 }
 .banner-slide.on{opacity:1}
@@ -389,40 +306,180 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
 
 .empty{text-align:center;padding:40px 16px;color:var(--muted);font-size:16px;font-weight:600}
 .date-sep{font-size:16px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:10px 2px 6px;margin-top:4px}
+
+/* ── AUTH SCREENS ── */
+#auth-wrap{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:#0f172a}
+.auth-bg{position:absolute;inset:0;z-index:0}
+.auth-slide{position:absolute;inset:0;background-size:cover;background-position:center 15%;opacity:0;transition:opacity 1s ease}
+.auth-slide.on{opacity:1;animation:kbzoom 9s ease-in-out infinite alternate}
+.auth-slide.on{opacity:1}
+.auth-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,23,42,.05) 0%,rgba(15,23,42,.1) 40%,rgba(15,23,42,.55) 70%,rgba(15,23,42,.82) 100%)}
+.auth-top{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 28px 20px;position:relative;z-index:1;min-height:200px}
+.auth-logo{width:64px;height:64px;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:18px}
+.auth-top h2{font-size:28px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.5px;text-shadow:0 2px 12px rgba(0,0,0,.3)}
+.auth-top p{font-size:14px;color:rgba(255,255,255,.75);line-height:1.5;font-weight:500}
+.auth-card{background:var(--card);border-radius:28px 28px 0 0;padding:24px 24px 36px;position:relative;z-index:1;overflow-y:auto;max-height:78vh}
+.auth-tabs{display:flex;background:var(--bg);border-radius:12px;padding:3px;margin-bottom:20px;gap:3px}
+.auth-tab{flex:1;padding:10px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--muted);background:none;transition:all .15s}
+.auth-tab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.auth-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:13px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink);outline:none;transition:all .15s;margin-bottom:10px;background:var(--card)}
+.auth-input:focus{border-color:var(--sc);box-shadow:0 0 0 4px var(--sl)}
+.auth-input.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+.auth-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--sd),var(--sc));color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(59,130,246,.4);margin-bottom:12px;transition:all .15s}
+.auth-btn:active{opacity:.85;transform:scale(.98)}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:4px 0 12px;color:var(--muted);font-size:13px;font-weight:600}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.google-btn{width:100%;padding:14px;border:2px solid var(--border);border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;background:var(--card);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s}
+.google-btn:active{background:var(--bg)}
+.auth-err{background:var(--rl);border:1px solid var(--red);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--red);font-weight:600;margin-bottom:10px;display:none}
+.auth-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;font-weight:600}
+
+
+/* ── ONBOARDING (sau đăng ký) ── */
+#onboarding{display:none;min-height:100vh;background:var(--bg);flex-direction:column}
+.ob-head{background:linear-gradient(135deg,#1E3A8A,#3B82F6);padding:40px 24px 28px;color:#fff}
+.ob-head h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.ob-head p{font-size:14px;opacity:.8;font-weight:500}
+.ob-steps-bar{display:flex;gap:4px;margin-top:16px}
+.ob-step-dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.3);transition:background .3s}
+.ob-step-dot.done{background:#fff}
+.ob-body{flex:1;padding:20px 16px 100px;overflow-y:auto}
+.ob-card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.ob-label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:block;margin-bottom:8px}
+.ob-input{width:100%;padding:13px 15px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink);outline:none;transition:all .15s;margin-bottom:10px;background:var(--card)}
+.ob-input:focus{border-color:var(--sc);box-shadow:0 0 0 4px var(--sl)}
+.ob-input:last-child{margin-bottom:0}
+.ob-svc-wrap{display:flex;flex-direction:column;gap:8px}
+.ob-svc-row{display:flex;gap:8px;align-items:center;background:var(--bg);border-radius:12px;padding:10px 12px}
+.ob-svc-row input{flex:1;border:none;background:none;font-size:14px;font-family:'Nunito',sans-serif;font-weight:600;color:var(--ink);outline:none}
+.ob-svc-row input::placeholder{color:var(--muted)}
+.ob-svc-price{width:90px;text-align:right;color:var(--sc)!important;font-weight:700!important}
+.ob-svc-del{width:28px;height:28px;border:none;background:var(--rl);border-radius:8px;color:var(--red);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ob-add-btn{width:100%;padding:11px;border:2px dashed var(--border);border-radius:12px;background:none;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:6px;transition:all .15s}
+.ob-add-btn:active{background:var(--bg)}
+.ob-cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:14px 16px 28px;background:var(--card);border-top:1px solid var(--border)}
+.ob-next-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--sd),var(--sc));color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(59,130,246,.4)}
+.ob-back-link{text-align:center;margin-top:10px;font-size:13px;color:var(--muted);font-weight:600;cursor:pointer}
+
+/* ── TRIAL BANNER ── */
+.trial-banner{
+  margin:10px 14px 0;border-radius:14px;padding:12px 14px;
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  animation:fadeUp .3s ease;
+}
+.trial-banner.ok{background:var(--tl);border:1px solid rgba(16,185,129,.2)}
+.trial-banner.warn{background:var(--al);border:1px solid rgba(245,158,11,.2)}
+.trial-banner.exp{background:var(--rl);border:1px solid rgba(239,68,68,.2)}
+.trial-banner-ico{font-size:22px;flex-shrink:0}
+.trial-banner-text{flex:1}
+.trial-banner-title{font-size:13px;font-weight:800;color:var(--ink)}
+.trial-banner.warn .trial-banner-title{color:#92400E}
+.trial-banner.exp .trial-banner-title{color:var(--red)}
+.trial-banner-sub{font-size:12px;color:var(--muted);margin-top:1px;font-weight:600}
+.trial-banner-cta{font-size:12px;font-weight:800;color:var(--sc);white-space:nowrap}
+.trial-banner.warn .trial-banner-cta{color:var(--amber)}
+
+/* ── UPSELL SCREEN ── */
+#upsell{display:none;position:fixed;inset:0;z-index:500;background:rgba(10,20,50,.7);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+#upsell.on{display:flex}
+.upsell-box{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:430px;padding:28px 24px 40px;animation:fadeUp .3s ease}
+.upsell-icon{font-size:48px;text-align:center;margin-bottom:12px}
+.upsell-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:8px}
+.upsell-sub{font-size:14px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px;font-weight:500}
+.upsell-plan{background:var(--sl);border:2px solid var(--sc);border-radius:16px;padding:16px;margin-bottom:16px}
+.upsell-plan-name{font-size:18px;font-weight:800;color:var(--sc);margin-bottom:4px}
+.upsell-plan-price{font-size:28px;font-weight:800;color:var(--ink);margin-bottom:10px}
+.upsell-plan-price span{font-size:14px;color:var(--muted);font-weight:600}
+.upsell-features{display:flex;flex-direction:column;gap:7px}
+.upsell-feat{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.upsell-feat::before{content:'✓';color:var(--sc);font-weight:800;font-size:15px}
+.upsell-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--sd),var(--sc));color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(59,130,246,.4);margin-bottom:10px}
+.upsell-later{width:100%;padding:12px;border:none;background:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif}
 </style>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <!-- Background slideshow dọc -->
-  <div class="ls-bg">
-    <div class="ls-slide on" style="background-image:url('https://lh3.googleusercontent.com/d/13RL4ZrBNw1Pas0eXyJzyg_SSgNdayq3G')"></div>
-    <div class="ls-slide" style="background-image:url('https://lh3.googleusercontent.com/d/1pVK-eXjb1dumN5h05MxYCAsPLdE9uqCe')"></div>
-    <div class="ls-slide" style="background-image:url('https://lh3.googleusercontent.com/d/16QILmF6k4eVwwLxcsefDey6tBQU4qPHT')"></div>
-    <div class="ls-overlay"></div>
+<!-- AUTH WRAP -->
+<div id="auth-wrap">
+  <div class="auth-bg">
+    <div class="auth-slide on" style="background-image:url('https://lh3.googleusercontent.com/d/13RL4ZrBNw1Pas0eXyJzyg_SSgNdayq3G')"></div>
+    <div class="auth-slide" style="background-image:url('https://lh3.googleusercontent.com/d/1pVK-eXjb1dumN5h05MxYCAsPLdE9uqCe')"></div>
+    <div class="auth-slide" style="background-image:url('https://lh3.googleusercontent.com/d/16QILmF6k4eVwwLxcsefDey6tBQU4qPHT')"></div>
+    <div class="auth-overlay"></div>
   </div>
-  <!-- Dots -->
-  <div class="ls-dots">
-    <div class="ls-dot on" onclick="goLoginSlide(0)"></div>
-    <div class="ls-dot" onclick="goLoginSlide(1)"></div>
-    <div class="ls-dot" onclick="goLoginSlide(2)"></div>
+  <div style="position:absolute;top:52px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2">
+    <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s;cursor:pointer" class="auth-dot on" id="aud0" onclick="goAuthSlide(0)"></div>
+    <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s;cursor:pointer" class="auth-dot" id="aud1" onclick="goAuthSlide(1)"></div>
+    <div style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s;cursor:pointer" class="auth-dot" id="aud2" onclick="goAuthSlide(2)"></div>
   </div>
-  <div class="login-top">
-    <div class="login-logo">📅</div>
-    <h2>BookEasy Dashboard</h2>
+  <div class="auth-top">
+    <div class="auth-logo">📅</div>
+    <h2>BookEasy</h2>
     <p>Quản lý lịch hẹn & doanh thu tiệm của bạn mọi lúc, mọi nơi.</p>
   </div>
-  <div class="login-card">
-    <label class="login-label">Shop ID</label>
-    <input id="shop-id-input" class="login-input" type="text" placeholder="vd: quynhspa, bimspa..."
-      onkeydown="if(event.key==='Enter')enterApp()">
-    <div class="demo-hint">
-      💡 Shop ID mẫu:<br>
-      <code>quynhspa</code> → Quỳnh Spa<br>
-      <code>bimspa</code> → Bim Spa
+  <div class="auth-card">
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab on" id="tab-login" onclick="switchAuthTab('login')">Đăng nhập</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Đăng ký</button>
     </div>
-    <button class="login-btn" onclick="enterApp()">▶ Vào Dashboard</button>
+    <!-- Error -->
+    <div class="auth-err" id="auth-err"></div>
+    <!-- ĐĂNG NHẬP -->
+    <div id="form-login">
+      <input class="auth-input" id="li-email" type="email" placeholder="Email của bạn" autocomplete="email">
+      <input class="auth-input" id="li-pass" type="password" placeholder="Mật khẩu" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="auth-btn" id="li-btn" onclick="doLogin()">🔐 Đăng nhập</button>
+      <div class="auth-divider">hoặc</div>
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Tiếp tục với Google
+      </button>
+      <div class="auth-hint">Quên mật khẩu? <span style="color:var(--sc);cursor:pointer" onclick="doForgotPass()">Đặt lại</span></div>
+    </div>
+    <!-- ĐĂNG KÝ -->
+    <div id="form-register" style="display:none">
+      <input class="auth-input" id="rg-name" type="text" placeholder="Tên tiệm của bạn (vd: Quỳnh Spa)" autocomplete="off">
+      <input class="auth-input" id="rg-email" type="email" placeholder="Email" autocomplete="email">
+      <input class="auth-input" id="rg-pass" type="password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" autocomplete="new-password">
+      <input class="auth-input" id="rg-pass2" type="password" placeholder="Xác nhận mật khẩu"
+        onkeydown="if(event.key==='Enter')doRegister()">
+      <button class="auth-btn" id="rg-btn" onclick="doRegister()">🚀 Tạo tài khoản miễn phí</button>
+      <div class="auth-divider">hoặc</div>
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Đăng ký với Google
+      </button>
+      <div class="auth-hint">🎁 Dùng thử miễn phí 30 ngày · Không cần thẻ</div>
+      <div style="height:20px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING (sau đăng ký lần đầu) -->
+<div id="onboarding">
+  <div class="ob-head">
+    <h2>👋 Chào mừng đến BookEasy!</h2>
+    <p>Điền thông tin tiệm để bắt đầu nhận đặt lịch</p>
+    <div class="ob-steps-bar">
+      <div class="ob-step-dot done" id="ob-d1"></div>
+      <div class="ob-step-dot" id="ob-d2"></div>
+      <div class="ob-step-dot" id="ob-d3"></div>
+    </div>
+  </div>
+  <div class="ob-body" id="ob-body">
+    <!-- Nội dung dynamic theo step -->
+  </div>
+  <div class="ob-cta">
+    <button class="ob-next-btn" id="ob-next" onclick="obNext()">Tiếp theo →</button>
+    <div class="ob-back-link" id="ob-back" onclick="obBack()" style="display:none">← Quay lại</div>
   </div>
 </div>
 
@@ -478,6 +535,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
       <div class="sf-val" id="s4" style="color:var(--teal);font-size:20px">0k</div>
       <div class="sf-sub">đã xác nhận</div>
     </div>
+  </div>
+
+  <!-- TRIAL BANNER -->
+  <div class="trial-banner ok" id="trial-banner" onclick="showUpsell()" style="display:none">
+    <div class="trial-banner-ico" id="trial-ico">🎁</div>
+    <div class="trial-banner-text">
+      <div class="trial-banner-title" id="trial-title">Đang dùng thử miễn phí</div>
+      <div class="trial-banner-sub" id="trial-sub">Còn 30 ngày</div>
+    </div>
+    <div class="trial-banner-cta" id="trial-cta">Nâng cấp →</div>
   </div>
 
   <div class="content">
@@ -541,6 +608,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
       <div class="sec-h">⚙️ Cài đặt</div>
       <div class="scard">
         <div class="sr"><div class="sr-l"><div class="sr-ico" id="cfg-ico" style="background:var(--sl)">🏪</div>Thông tin shop</div><div class="sr-r" id="cfg-name">— →</div></div>
+        <div class="sr" style="cursor:default"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">📧</div><span id="cfg-email" style="font-size:13px">—</span></div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📆</div>Google Calendar</div><div class="sr-r" style="color:var(--teal)">Đã kết nối ✓</div></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--tl)">🔔</div>Thông báo Zalo</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
         <div class="sr"><div class="sr-l"><div class="sr-ico" style="background:var(--al)">📧</div>Email tự động</div><button class="tog on" onclick="this.classList.toggle('on');toast('Đã lưu!')"></button></div>
@@ -551,7 +619,11 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
         <div class="sr" onclick="toast('Mở hướng dẫn FB...')"><div class="sr-l"><div class="sr-ico" style="background:#E6F1FB">📘</div>Nhúng Facebook</div><div class="sr-r">→</div></div>
       </div>
       <div class="scard">
-        <div class="sr" style="cursor:default"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">💳</div>Gói hiện tại</div><div class="sr-r"><span style="background:var(--sl);color:var(--sc);font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">Basic · 299k/th</span></div></div>
+        <div class="sr" onclick="showUpsell(false)" style="cursor:pointer"><div class="sr-l"><div class="sr-ico" style="background:var(--sl)">💳</div>Gói hiện tại</div><div class="sr-r"><span id="plan-badge" style="background:var(--sl);color:var(--sc);font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">Dùng thử</span></div></div>
+        <div class="sr" onclick="contactUpgrade()" style="cursor:pointer"><div class="sr-l"><div class="sr-ico" style="background:var(--tl)">💬</div>Liên hệ hỗ trợ (Zalo)</div><div class="sr-r" style="color:var(--teal)">Chat →</div></div>
+      </div>
+      <div class="scard">
+        <div class="sr" onclick="exitApp()" style="cursor:pointer"><div class="sr-l"><div class="sr-ico" style="background:var(--rl)">🚪</div><span style="color:var(--red)">Đăng xuất</span></div><div class="sr-r" style="color:var(--red)">→</div></div>
       </div>
     </div>
   </div>
@@ -586,16 +658,612 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);max-w
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbypYjTHoh30O599O5zHEZWpWJRGoRanGRkdLWocbOo2rKq5OCBF9oVmeljXq7o4vteH/exec';
-const T=new Date();
-const TS=T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String(T.getDate()).padStart(2,'0');
-const DAYS=['CN','T2','T3','T4','T5','T6','T7'];
-const VDAYS=['CN','T2','T3','T4','T5','T6','T7'];
-const _M={Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+// ═══════════════════════════════════════════════════════
+// FIREBASE CONFIG — thay bằng config project của Sơn
+// ═══════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCTBdk37pv3E92KitPYJMehUjXtFjc1XRw",
+  authDomain: "bookeasy-247-462a9.firebaseapp.com",
+  projectId: "bookeasy-247-462a9",
+  storageBucket: "bookeasy-247-462a9.firebasestorage.app",
+  messagingSenderId: "959886707971",
+  appId: "1:959886707971:web:b2d860f7c232119905ed36"
+};
 
-let SHOP_CONFIG_CACHE=null;
-let SHOP_ID='',BK=[],curFlt='all',revDone=false,loadedMonths=2,curRange=1,autoRefreshTimer=null;
+  /* 
+   * FIRESTORE SETUP — Chạy trong Firebase Console > Firestore > Rules:
+   * 
+   * rules_version = '2';
+   * service cloud.firestore {
+   *   match /databases/{database}/documents {
+   *     match /shop_owners/{userId} {
+   *       allow read, write: if request.auth != null && request.auth.uid == userId;
+   *     }
+   *   }
+   * }
+   */
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
+// ── SUPABASE CONFIG ──────────────────────────────────────
+const SB_URL = 'https://vxzhcrlavjhzhmwkakjz.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4emhjcmxhdmpoemhtd2tha2p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODg4MzQsImV4cCI6MjA5NDc2NDgzNH0.vxftFMAAY1PJJ5uYd1Uq7hlnOfW3rI1e3e0mdV9WdgA';
+
+// ── APPS SCRIPT ─────────────────────────────────────────
+const API_URL='https://script.google.com/macros/s/AKfycbz8ZeCPgJBgbujT3PfCPrLOzkfzb_n-Q3xTjWP78cW7u-LTc4u23qYoUTLrtiGsJNpl/exec';
+
+// ── CONSTANTS ───────────────────────────────────────────
+const T  = new Date();
+const TS = T.getFullYear()+'-'+String(T.getMonth()+1).padStart(2,'0')+'-'+String(T.getDate()).padStart(2,'0');
+const DAYS  = ['CN','T2','T3','T4','T5','T6','T7'];
+const VDAYS = ['CN','T2','T3','T4','T5','T6','T7'];
+const _M = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+const TRIAL_DAYS = 30;
+
+// ── STATE ────────────────────────────────────────────────
+let SHOP_CONFIG_CACHE = null;
+let SHOP_ID = '', BK = [], curFlt='all', revDone=false, loadedMonths=2, curRange=1, autoRefreshTimer=null;
+let CURRENT_USER = null, USER_DOC = null;
+
+// ════════════════════════════════════════════════════════
+// AUTH — Firebase listener
+// ════════════════════════════════════════════════════════
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    CURRENT_USER = user;
+    await loadUserDoc(user);
+  } else {
+    // Kiểm tra có ?shop= param không (demo/legacy mode)
+    const params = new URLSearchParams(location.search);
+    const shopParam = params.get('shop');
+    if (shopParam) {
+      SHOP_ID = shopParam;
+      enterApp();
+    } else {
+      CURRENT_USER = null;
+      USER_DOC = null;
+      showAuthWrap();
+    }
+  }
+});
+
+async function loadUserDoc(user) {
+  try {
+    const snap = await db.collection('shop_owners').doc(user.uid).get();
+    if (!snap.exists) {
+      // User mới — chưa có doc → chạy onboarding
+      showOnboarding();
+      return;
+    }
+    USER_DOC = snap.data();
+    // Nếu chưa hoàn thành onboarding → tiếp tục onboarding
+    if (!USER_DOC.onboardingDone) {
+      showOnboarding();
+      return;
+    }
+    // Kiểm tra trial
+    const trialStatus = getTrialStatus();
+    if (trialStatus.expired) {
+      // Hết trial → vẫn vào được nhưng hiện upsell full
+      enterApp();
+      setTimeout(() => showUpsell(true), 800);
+    } else {
+      enterApp();
+    }
+  } catch(e) {
+    console.error('loadUserDoc error', e);
+    showAuthWrap();
+  }
+}
+
+// ── Trial logic ─────────────────────────────────────────
+function getTrialStatus() {
+  if (!USER_DOC) return { expired: false, daysLeft: TRIAL_DAYS, plan: 'trial' };
+  const plan = USER_DOC.plan || 'trial';
+  if (plan === 'basic' || plan === 'growth') return { expired: false, daysLeft: 999, plan };
+  const trialStart = USER_DOC.trialStart?.toDate?.() || new Date(USER_DOC.trialStart || Date.now());
+  const elapsed = Math.floor((Date.now() - trialStart.getTime()) / 86400000);
+  const daysLeft = Math.max(0, TRIAL_DAYS - elapsed);
+  return { expired: daysLeft === 0, daysLeft, plan: 'trial' };
+}
+
+function renderTrialBanner() {
+  // Update plan badge trong settings
+  const badge = document.getElementById('plan-badge');
+  const emailEl = document.getElementById('cfg-email');
+  if (emailEl && CURRENT_USER) emailEl.textContent = CURRENT_USER.email || '';
+  if (badge) {
+    const { expired, daysLeft, plan } = getTrialStatus();
+    if (plan === 'basic') { badge.textContent='Basic · 299k/th'; badge.style.background='var(--tl)'; badge.style.color='var(--td)'; }
+    else if (plan === 'growth') { badge.textContent='Growth · 499k/th'; badge.style.background='#EEF2FF'; badge.style.color='#4F46E5'; }
+    else if (expired) { badge.textContent='⏰ Hết dùng thử'; badge.style.background='var(--rl)'; badge.style.color='var(--red)'; }
+    else { badge.textContent=`🎁 Thử miễn phí · ${daysLeft}d`; badge.style.background='var(--sl)'; badge.style.color='var(--sc)'; }
+  }
+
+  const banner = document.getElementById('trial-banner');
+  if (!USER_DOC) { banner.style.display='none'; return; }
+  const { expired, daysLeft, plan } = getTrialStatus();
+  if (plan !== 'trial') { banner.style.display='none'; return; }
+  banner.style.display = 'flex';
+  const ico   = document.getElementById('trial-ico');
+  const title = document.getElementById('trial-title');
+  const sub   = document.getElementById('trial-sub');
+  const cta   = document.getElementById('trial-cta');
+  if (expired) {
+    banner.className = 'trial-banner exp';
+    ico.textContent = '⏰'; title.textContent = 'Đã hết dùng thử';
+    sub.textContent = 'Nâng cấp để tiếp tục'; cta.textContent = 'Nâng cấp →';
+  } else if (daysLeft <= 7) {
+    banner.className = 'trial-banner warn';
+    ico.textContent = '⚠️'; title.textContent = `Còn ${daysLeft} ngày dùng thử`;
+    sub.textContent = 'Nâng cấp để không gián đoạn'; cta.textContent = 'Xem gói →';
+  } else {
+    banner.className = 'trial-banner ok';
+    ico.textContent = '🎁'; title.textContent = 'Đang dùng thử miễn phí';
+    sub.textContent = `Còn ${daysLeft} ngày`; cta.textContent = 'Nâng cấp →';
+  }
+}
+
+function showUpsell(expired = false) {
+  const el = document.getElementById('upsell');
+  el.classList.add('on');
+  if (expired) {
+    document.getElementById('upsell-title').textContent = 'Hết thời gian dùng thử';
+    document.getElementById('upsell-sub').textContent = '30 ngày dùng thử đã kết thúc. Nâng cấp để tiếp tục sử dụng BookEasy.';
+    document.getElementById('upsell-later-btn').style.display = 'none';
+  } else {
+    document.getElementById('upsell-title').textContent = 'Nâng cấp BookEasy';
+    document.getElementById('upsell-sub').textContent = 'Mở khóa toàn bộ tính năng và hỗ trợ ưu tiên.';
+    document.getElementById('upsell-later-btn').style.display = 'block';
+  }
+}
+
+function contactUpgrade() {
+  const shopName = USER_DOC?.shopName || SHOP_ID || 'Chủ shop';
+  const msg = encodeURIComponent(`Xin chào! Tôi muốn nâng cấp BookEasy cho tiệm "${shopName}". Vui lòng hỗ trợ ạ.`);
+  window.open('https://zalo.me/0YOUR_ZALO_NUMBER?text=' + msg, '_blank');
+}
+
+// ════════════════════════════════════════════════════════
+// AUTH ACTIONS
+// ════════════════════════════════════════════════════════
+function showAuthWrap() {
+  document.getElementById('auth-wrap').style.display  = 'flex';
+  document.getElementById('onboarding').style.display  = 'none';
+  document.getElementById('app').style.display         = 'none';
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('tab-login').classList.toggle('on', tab==='login');
+  document.getElementById('tab-register').classList.toggle('on', tab==='register');
+  document.getElementById('form-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+  clearAuthErr();
+  // Reset trạng thái nút đăng ký khi switch tab
+  if (tab === 'register') {
+    const btn = document.getElementById('rg-btn');
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 Tạo tài khoản miễn phí'; }
+  }
+  // Scroll auth-card lên đầu
+  const card = document.querySelector('.auth-card');
+  if (card) card.scrollTop = 0;
+}
+
+function showAuthErr(msg) {
+  const el = document.getElementById('auth-err');
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearAuthErr() { document.getElementById('auth-err').style.display='none'; }
+
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  if (!email || !pass) { showAuthErr('Vui lòng nhập đủ email và mật khẩu.'); return; }
+  clearAuthErr();
+  const btn = document.getElementById('li-btn');
+  btn.disabled = true; btn.textContent = '⏳ Đang đăng nhập...';
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+    // onAuthStateChanged sẽ xử lý
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '🔐 Đăng nhập';
+    console.error('Login error:', e.code, e.message);
+    const msgs = {
+      'auth/user-not-found':         'Email chưa đăng ký.',
+      'auth/wrong-password':         'Mật khẩu không đúng.',
+      'auth/invalid-email':          'Email không hợp lệ.',
+      'auth/too-many-requests':      'Quá nhiều lần thử. Vui lòng thử lại sau.',
+      'auth/invalid-credential':     'Email hoặc mật khẩu không đúng.',
+      'auth/network-request-failed': 'Lỗi kết nối mạng.',
+    };
+    showAuthErr(msgs[e.code] || `Đăng nhập thất bại: ${e.message}`);
+  }
+}
+
+async function doRegister() {
+  const name  = document.getElementById('rg-name').value.trim();
+  const email = document.getElementById('rg-email').value.trim();
+  const pass  = document.getElementById('rg-pass').value;
+  const pass2 = document.getElementById('rg-pass2').value;
+  const card  = document.querySelector('.auth-card');
+  if (!name)  { showAuthErr('Vui lòng nhập tên tiệm.'); return; }
+  if (!email) { showAuthErr('Vui lòng nhập email.'); return; }
+  if (pass.length < 6) { showAuthErr('Mật khẩu ít nhất 6 ký tự.'); return; }
+  if (pass !== pass2)  { showAuthErr('Mật khẩu xác nhận không khớp.'); return; }
+  clearAuthErr();
+  const btn = document.getElementById('rg-btn');
+  btn.disabled = true; btn.textContent = '⏳ Đang tạo tài khoản...';
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    const shopId = slugify(name) + '_' + cred.user.uid.slice(0,5);
+    await db.collection('shop_owners').doc(cred.user.uid).set({
+      uid:        cred.user.uid,
+      email:      email,
+      shopName:   name,
+      shopId:     shopId,
+      plan:       'trial',
+      trialStart: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      onboardingDone: false,
+    });
+    USER_DOC = { uid: cred.user.uid, email, shopName: name, shopId, plan:'trial', onboardingDone:false };
+    CURRENT_USER = cred.user;
+    toast('✅ Tạo tài khoản thành công!');
+    setTimeout(() => showOnboarding(), 800);
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '🚀 Tạo tài khoản miễn phí';
+    console.error('Register error:', e.code, e.message);
+    const msgs = {
+      'auth/email-already-in-use':   'Email này đã được đăng ký rồi.',
+      'auth/invalid-email':          'Email không hợp lệ.',
+      'auth/weak-password':          'Mật khẩu quá yếu (thêm số hoặc ký tự đặc biệt).',
+      'auth/network-request-failed': 'Lỗi kết nối mạng. Thử lại nhé.',
+      'auth/operation-not-allowed':  '⚠️ Firebase chưa bật Email/Password auth. Vào Console → Authentication → Sign-in method → Email/Password → Enable.',
+      'auth/configuration-not-found':'⚠️ Firebase config lỗi. Kiểm tra FIREBASE_CONFIG.',
+    };
+    const errMsg = msgs[e.code] || `Đăng ký thất bại (${e.code}): ${e.message}`;
+    showAuthErr(errMsg);
+    if (card) card.scrollTop = 0;
+  }
+}
+
+async function doGoogleLogin() {
+  clearAuthErr();
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    const snap = await db.collection('shop_owners').doc(user.uid).get();
+    if (!snap.exists) {
+      // Google user mới — tạo doc rồi onboarding
+      const shopId = slugify(user.displayName || 'shop') + '_' + user.uid.slice(0,5);
+      await db.collection('shop_owners').doc(user.uid).set({
+        uid:        user.uid,
+        email:      user.email,
+        shopName:   user.displayName || '',
+        shopId:     shopId,
+        plan:       'trial',
+        trialStart: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt:  firebase.firestore.FieldValue.serverTimestamp(),
+        onboardingDone: false,
+      });
+      USER_DOC = { uid: user.uid, email: user.email, shopName: user.displayName||'', shopId, plan:'trial', onboardingDone:false };
+      CURRENT_USER = user;
+      showOnboarding();
+    }
+    // Nếu đã có doc, onAuthStateChanged xử lý
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user')
+      showAuthErr('Đăng nhập Google thất bại. Thử lại nhé.');
+  }
+}
+
+
+async function doForgotPass() {
+  const email = document.getElementById('li-email').value.trim();
+  if (!email) { showAuthErr('Nhập email của bạn trước nhé.'); return; }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showAuthErr('✅ Đã gửi link đặt lại mật khẩu vào ' + email);
+    document.getElementById('auth-err').style.background='var(--tl)';
+    document.getElementById('auth-err').style.borderColor='var(--teal)';
+    document.getElementById('auth-err').style.color='var(--td)';
+  } catch(e) {
+    showAuthErr('Không tìm thấy email này.');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// ONBOARDING — 3 bước
+// ════════════════════════════════════════════════════════
+let obStep = 1;
+const OB_TOTAL = 3;
+let obServices = [
+  { name:'', duration:60, price:0, icon:'💆' },
+];
+
+function showOnboarding() {
+  document.getElementById('auth-wrap').style.display   = 'none';
+  document.getElementById('onboarding').style.display  = 'flex';
+  document.getElementById('app').style.display         = 'none';
+  obStep = 1;
+  renderObStep();
+}
+
+function renderObStep() {
+  // Update progress dots
+  for(let i=1; i<=OB_TOTAL; i++) {
+    document.getElementById('ob-d'+i).className = 'ob-step-dot' + (i<=obStep?' done':'');
+  }
+  document.getElementById('ob-back').style.display = obStep>1 ? 'block':'none';
+
+  const body = document.getElementById('ob-body');
+  if (obStep === 1) {
+    document.getElementById('ob-next').textContent = 'Tiếp theo →';
+    body.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Bước 1 / 3 — Thông tin cơ bản</div>
+      <div class="ob-card">
+        <label class="ob-label">Tên tiệm *</label>
+        <input class="ob-input" id="ob-shopname" type="text" placeholder="vd: Quỳnh Spa, Salon Hoa..." value="${USER_DOC?.shopName||''}">
+        <label class="ob-label">Địa chỉ</label>
+        <input class="ob-input" id="ob-addr" type="text" placeholder="vd: 123 Nguyễn Huệ, Biên Hòa">
+        <label class="ob-label">Số điện thoại</label>
+        <input class="ob-input" id="ob-phone" type="tel" placeholder="0901 234 567">
+      </div>
+      <div class="ob-card">
+        <label class="ob-label">Emoji đại diện tiệm</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap" id="ob-emojis">
+          ${['💆','💅','✂️','💇','🧖','🌸','✨','💎'].map(e=>`<div onclick="selectEmoji(this,'${e}')" style="width:44px;height:44px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all .15s" data-emoji="${e}">${e}</div>`).join('')}
+        </div>
+      </div>`;
+    // Pre-select first emoji
+    setTimeout(()=>{ const first=document.querySelector('[data-emoji]'); if(first) selectEmoji(first,first.dataset.emoji); },50);
+  }
+  else if (obStep === 2) {
+    document.getElementById('ob-next').textContent = 'Tiếp theo →';
+    const rows = obServices.map((s,i)=>`
+      <div class="ob-svc-row" id="ob-svc-${i}">
+        <span style="font-size:20px;cursor:pointer" onclick="cycleIcon(${i})">${s.icon}</span>
+        <input placeholder="Tên dịch vụ (vd: Gội đầu)" value="${s.name}" oninput="obServices[${i}].name=this.value">
+        <input class="ob-svc-price" placeholder="Giá (k)" value="${s.price||''}" type="number" oninput="obServices[${i}].price=parseInt(this.value)*1000||0">
+        ${obServices.length>1?`<button class="ob-svc-del" onclick="obDelSvc(${i})">✕</button>`:''}
+      </div>`).join('');
+    body.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Bước 2 / 3 — Dịch vụ của tiệm</div>
+      <div class="ob-card">
+        <label class="ob-label">Các dịch vụ bạn cung cấp</label>
+        <div class="ob-svc-wrap" id="ob-svc-list">${rows}</div>
+        <button class="ob-add-btn" onclick="obAddSvc()">+ Thêm dịch vụ</button>
+      </div>
+      <div class="ob-card">
+        <label class="ob-label">Giờ mở cửa</label>
+        <div style="display:flex;gap:10px">
+          <input class="ob-input" id="ob-open"  type="time" value="08:00" style="flex:1;margin-bottom:0">
+          <span style="line-height:48px;color:var(--muted);font-weight:700">đến</span>
+          <input class="ob-input" id="ob-close" type="time" value="20:00" style="flex:1;margin-bottom:0">
+        </div>
+      </div>`;
+  }
+  else if (obStep === 3) {
+    document.getElementById('ob-next').textContent = '🚀 Hoàn tất & vào Dashboard';
+    const shopId = USER_DOC?.shopId || 'shop_xxx';
+    const bookingLink = `https://bookeasy.banhangtudong247.vn/booking-customer.html?shop=${shopId}`;
+    body.innerHTML = `
+      <div style="font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Bước 3 / 3 — Hoàn tất</div>
+      <div class="ob-card" style="text-align:center;padding:24px">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:8px">Tiệm của bạn đã sẵn sàng!</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:16px">Mình đã nhận thông tin. Sơn sẽ kích hoạt trang đặt lịch trong vòng <strong>24 giờ</strong> và gửi link cho bạn qua Zalo.</div>
+        <div style="background:var(--sl);border-radius:12px;padding:12px;font-size:13px;color:var(--sc);font-weight:700;word-break:break-all">${bookingLink}</div>
+      </div>
+      <div class="ob-card">
+        <label class="ob-label">🎁 Dùng thử miễn phí 30 ngày</label>
+        <div style="font-size:14px;color:var(--ink2);line-height:1.7;font-weight:600">
+          ✅ Đặt lịch online không giới hạn<br>
+          ✅ Dashboard quản lý realtime<br>
+          ✅ Không cần thẻ tín dụng<br>
+          ✅ Hỗ trợ setup miễn phí
+        </div>
+      </div>`;
+  }
+}
+
+let selectedEmoji = '💆';
+function selectEmoji(el, emoji) {
+  selectedEmoji = emoji;
+  document.querySelectorAll('[data-emoji]').forEach(e => {
+    e.style.borderColor = e.dataset.emoji===emoji ? 'var(--sc)' : 'transparent';
+    e.style.background  = e.dataset.emoji===emoji ? 'var(--sl)' : 'var(--bg)';
+  });
+}
+
+const ICONS = ['💆','💅','✂️','💇','🧖','🌸','✨','💎','🫧','🪷'];
+function cycleIcon(i) {
+  const cur = obServices[i].icon;
+  const next = ICONS[(ICONS.indexOf(cur)+1) % ICONS.length];
+  obServices[i].icon = next;
+  renderObStep();
+}
+function obAddSvc() {
+  obServices.push({name:'',duration:60,price:0,icon:ICONS[obServices.length%ICONS.length]});
+  renderObStep();
+}
+function obDelSvc(i) {
+  obServices.splice(i,1); renderObStep();
+}
+
+async function obNext() {
+  if (obStep === 1) {
+    const name = document.getElementById('ob-shopname')?.value.trim();
+    if (!name) { toast('Vui lòng nhập tên tiệm!'); return; }
+    // Save step 1 data
+    obData.shopName  = name;
+    obData.shopAddr  = document.getElementById('ob-addr')?.value.trim() || '';
+    obData.shopPhone = document.getElementById('ob-phone')?.value.trim() || '';
+    obData.shopEmoji = selectedEmoji;
+    obStep = 2; renderObStep();
+  }
+  else if (obStep === 2) {
+    const valid = obServices.filter(s => s.name.trim());
+    if (!valid.length) { toast('Thêm ít nhất 1 dịch vụ!'); return; }
+    obData.services   = valid;
+    obData.openTime   = document.getElementById('ob-open')?.value  || '08:00';
+    obData.closeTime  = document.getElementById('ob-close')?.value || '20:00';
+    obStep = 3; renderObStep();
+  }
+  else if (obStep === 3) {
+    await saveOnboardingData();
+  }
+}
+
+function obBack() { if(obStep>1){ obStep--; renderObStep(); } }
+
+let obData = {};
+async function saveOnboardingData() {
+  const btn = document.getElementById('ob-next');
+  btn.disabled = true; btn.textContent = '⏳ Đang lưu...';
+  try {
+    const uid = CURRENT_USER.uid;
+    // Tạo slots mặc định từ giờ mở/đóng cửa
+    const slots = generateSlots(obData.openTime || '08:00', obData.closeTime || '20:00', 60);
+
+    // Cập nhật Firestore
+    await db.collection('shop_owners').doc(uid).update({
+      shopName:       obData.shopName,
+      shopAddress:    obData.shopAddr,
+      shopPhone:      obData.shopPhone,
+      shopEmoji:      obData.shopEmoji,
+      services:       obData.services,
+      slots:          slots,
+      openTime:       obData.openTime,
+      closeTime:      obData.closeTime,
+      onboardingDone: true,
+      updatedAt:      firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Cập nhật USER_DOC local
+    USER_DOC = { ...USER_DOC, ...obData, slots, onboardingDone: true };
+    SHOP_ID = USER_DOC.shopId;
+
+    // Gửi thông báo đến Sơn qua Apps Script
+    await notifyNewShop();
+
+    toast('✅ Đã lưu thông tin tiệm!');
+    setTimeout(() => enterApp(), 1000);
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false; btn.textContent = '🚀 Hoàn tất & vào Dashboard';
+    toast('❌ Lỗi lưu dữ liệu. Thử lại nhé!');
+  }
+}
+
+function generateSlots(open, close, step=60) {
+  const slots = [];
+  let [h,m] = open.split(':').map(Number);
+  const [eh,em] = close.split(':').map(Number);
+  while(h < eh || (h===eh && m<em)) {
+    slots.push(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));
+    m += step; if(m>=60){h+=Math.floor(m/60);m=m%60;}
+  }
+  return slots;
+}
+
+async function notifyNewShop() {
+  // Gửi về Apps Script để Sơn nhận Telegram thông báo
+  try {
+    const payload = {
+      action: 'newShopRegistered',
+      shopName:  USER_DOC.shopName,
+      shopId:    USER_DOC.shopId,
+      email:     USER_DOC.email || CURRENT_USER.email,
+      phone:     obData.shopPhone || '',
+      services:  (obData.services||[]).map(s=>s.name).join(', '),
+      timestamp: new Date().toISOString(),
+    };
+    await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  } catch(e) { /* silent */ }
+}
+
+// ════════════════════════════════════════════════════════
+// APP
+// ════════════════════════════════════════════════════════
+async function enterApp() {
+  document.getElementById('auth-wrap').style.display   = 'none';
+  document.getElementById('onboarding').style.display  = 'none';
+  document.getElementById('app').style.display         = 'flex';
+
+  // Load shop data — ưu tiên Firestore nếu có
+  let displayName  = '...';
+  let displayEmoji = '🏪';
+  let displayAddr  = '';
+
+  if (USER_DOC) {
+    SHOP_ID      = USER_DOC.shopId || SHOP_ID;
+    displayName  = USER_DOC.shopName  || SHOP_ID;
+    displayEmoji = USER_DOC.shopEmoji || '🏪';
+    displayAddr  = USER_DOC.shopAddress || USER_DOC.shopAddr || '';
+    // Dùng Firestore config như shop JSON
+    SHOP_CONFIG_CACHE = {
+      shopId:      SHOP_ID,
+      shopName:    displayName,
+      shopEmoji:   displayEmoji,
+      shopAddress: displayAddr,
+      services:    USER_DOC.services || [],
+      slots:       USER_DOC.slots    || [],
+      color:       USER_DOC.color    || '#3B82F6',
+    };
+  } else {
+    // Fallback về JSON file (khách demo / shop cũ)
+    try {
+      const res = await fetch('/shops/'+SHOP_ID+'.json');
+      if(res.ok){
+        SHOP_CONFIG_CACHE = await res.json();
+        displayName  = SHOP_CONFIG_CACHE.shopName  || SHOP_ID;
+        displayEmoji = SHOP_CONFIG_CACHE.shopEmoji || '🏪';
+        displayAddr  = SHOP_CONFIG_CACHE.shopAddress || '';
+      }
+    } catch(e) {}
+  }
+
+  document.getElementById('tb-av').textContent   = displayEmoji;
+  document.getElementById('tb-name').textContent  = displayName;
+  document.getElementById('tb-sub').textContent   = displayAddr;
+  document.getElementById('cfg-ico').textContent  = displayEmoji;
+  document.getElementById('cfg-name').textContent = displayName + ' →';
+
+  renderTrialBanner();
+  loadBookings();
+  autoRefreshTimer = setInterval(loadBookings, 30000);
+}
+
+function exitApp() {
+  if(!confirm('Đăng xuất?')) return;
+  clearInterval(autoRefreshTimer);
+  BK=[]; SHOP_ID=''; revDone=false; USER_DOC=null; CURRENT_USER=null;
+  auth.signOut();
+  // onAuthStateChanged sẽ tự gọi showAuthWrap()
+}
+
+// ════════════════════════════════════════════════════════
+// HELPER
+// ════════════════════════════════════════════════════════
+function slugify(str) {
+  return str.toLowerCase()
+    .replace(/[àáảãạăắặằẵẳâầấậẫẩ]/g,'a')
+    .replace(/[èéẻẽẹêềếệễể]/g,'e')
+    .replace(/[ìíỉĩị]/g,'i')
+    .replace(/[òóỏõọôồốộỗổơờớợỡở]/g,'o')
+    .replace(/[ùúủũụưừứựữử]/g,'u')
+    .replace(/[ỳýỷỹỵ]/g,'y')
+    .replace(/đ/g,'d')
+    .replace(/[^a-z0-9]+/g,'')
+    .slice(0,20);
+}
+
+// ════════════════════════════════════════════════════════
+// BOOKINGS — giữ nguyên logic cũ
+// ════════════════════════════════════════════════════════
 function fmt(n){if(n>=1000000)return(n/1000000).toFixed(1).replace('.0','')+'tr';return Math.round(n/1000)+'k'}
 function fmtF(n){return n.toLocaleString('vi-VN')+'đ'}
 
@@ -610,14 +1278,11 @@ function parseDate(d){
   if(day&&month){if(!year)year=new Date().getFullYear();return new Date(year,month-1,day);}
   return null;
 }
-
 function fmtD(d){const dt=parseDate(d);if(!dt)return'—';return DAYS[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);}
-
 function dateStr(d){
   const dt=parseDate(d);if(!dt)return'';
   return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
 }
-
 function parseTime(t){
   if(!t)return'';const s=String(t).trim();
   if(/^\d{1,2}:\d{2}$/.test(s))return s.padStart(5,'0').slice(0,5);
@@ -625,9 +1290,7 @@ function parseTime(t){
   const m2=s.match(/(\d{1,2}):(\d{2})/);if(m2)return m2[1].padStart(2,'0')+':'+m2[2];
   return s;
 }
-
 function toast(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
-
 function copyLink(){
   const link=`https://bookeasy.banhangtudong247.vn/booking-customer.html?shop=${SHOP_ID}`;
   navigator.clipboard.writeText(link).then(()=>toast('✅ Đã copy link!')).catch(()=>toast(link));
@@ -639,7 +1302,7 @@ async function loadBookings(){
     const res=await fetch(`${API_URL}?shopId=${encodeURIComponent(SHOP_ID)}`);
     const json=await res.json();
     if(json.status!=='ok')throw new Error('API error');
-    BK=json.data.map((r,i)=>({
+    const raw = json.data.map((r,i)=>({
       id:i+1,rowIndex:r.rowIndex||(i+2),shopId:r.shopId,
       name:r.customerName,phone:r.customerPhone,svc:r.service,dur:60,
       price:(()=>{const p=String(r.price||0).replace(/[.,]/g,'');const n=parseInt(p);return isNaN(n)?0:n;})(),
@@ -648,10 +1311,18 @@ async function loadBookings(){
       st:r.status==='Đã xác nhận'?'confirmed':r.status==='Đã huỷ'?'cancelled':'pending',
       createdAt:r.createdAt||''
     }));
+    // Lọc: chỉ giữ booking đúng shopId VÀ có tên khách (loại dòng rác/header)
+    BK = raw.filter(b => {
+      if (!b.name || !b.name.trim()) return false; // bỏ dòng trống
+      if (b.name === 'customerName' || b.name === 'Tên khách') return false; // bỏ header row
+      if (SHOP_ID && b.shopId && b.shopId !== SHOP_ID) return false; // bỏ shop khác
+      return true;
+    });
     loadedMonths=2;curRange=1;
     renderBookings();updateStats();revDone=false;
     if(document.getElementById('p2').classList.contains('on'))initRevenue();
   }catch(err){
+    console.error('loadBookings error:', err);
     document.getElementById('blist').innerHTML='<div class="empty">❌ Không tải được dữ liệu!</div>';
     toast('❌ Lỗi tải dữ liệu');
   }
@@ -663,39 +1334,6 @@ async function updateStatus(rowIndex,newStatus,displayName){
     toast(displayName);
     setTimeout(loadBookings,1500);
   }catch(err){toast('❌ Lỗi cập nhật!');}
-}
-
-async function enterApp(){
-  const shopInput=document.getElementById('shop-id-input');
-  SHOP_ID=shopInput?shopInput.value.trim():'';
-  if(!SHOP_ID){toast('Vui lòng nhập Shop ID!');return;}
-  document.getElementById('login').style.display='none';
-  document.getElementById('app').style.display='flex';
-  let displayName=SHOP_ID,displayEmoji='🏪',displayAddr='';
-  try{
-    const res=await fetch('/shops/'+SHOP_ID+'.json');
-    if(res.ok){
-      SHOP_CONFIG_CACHE=await res.json();
-      displayName=SHOP_CONFIG_CACHE.shopName||SHOP_ID;
-      displayEmoji=SHOP_CONFIG_CACHE.shopEmoji||'🏪';
-      displayAddr=SHOP_CONFIG_CACHE.shopAddress||'';
-    }
-  }catch(e){}
-  document.getElementById('tb-av').textContent=displayEmoji;
-  document.getElementById('tb-name').textContent=displayName;
-  document.getElementById('tb-sub').textContent=displayAddr;
-  document.getElementById('cfg-ico').textContent=displayEmoji;
-  document.getElementById('cfg-name').textContent=displayName+' →';
-  loadBookings();
-  autoRefreshTimer=setInterval(loadBookings,30000);
-}
-
-function exitApp(){
-  if(!confirm('Đăng xuất?'))return;
-  clearInterval(autoRefreshTimer);
-  BK=[];SHOP_ID='';revDone=false;
-  document.getElementById('app').style.display='none';
-  document.getElementById('login').style.display='flex';
 }
 
 function updateStats(){
@@ -749,29 +1387,16 @@ function conf(id){const b=BK.find(x=>x.id===id);if(!b)return;b.st='confirmed';re
 function canc(id){const b=BK.find(x=>x.id===id);if(!b)return;if(!confirm('Huỷ lịch của '+b.name+'?'))return;b.st='cancelled';renderBookings();updateStats();updateStatus(b.rowIndex,'Đã huỷ','Đã huỷ lịch – '+b.name);}
 function flt(f,btn){curFlt=f;document.querySelectorAll('.ft').forEach(x=>x.classList.remove('on'));btn.classList.add('on');renderBookings();}
 
-async function setRange(months,btn){
-  if(months===curRange)return;
-  curRange=months;
-  document.querySelectorAll('.rng-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  if(months<=loadedMonths){revDone=false;initRevenue();return;}
-  document.getElementById('r1').textContent='...';document.getElementById('r2').textContent='...';document.getElementById('r3').textContent='...';document.getElementById('r4').textContent='...';
-  try{
-    const res=await fetch(API_URL+'?shopId='+SHOP_ID+'&months='+months);
-    const json=await res.json();
-    if(json.status==='ok'){
-      loadedMonths=months;
-      BK=json.data.map((r,i)=>({id:i+1,rowIndex:r.rowIndex||(i+2),name:r.customerName||'',phone:String(r.customerPhone||''),svc:r.service||'',dur:Number(r.duration)||60,price:Number(r.price)||0,date:dateStr(r.date)||r.date||'',time:parseTime(r.time),note:r.note||'',st:r.status==='Đã xác nhận'?'confirmed':r.status==='Đã huỷ'?'cancelled':'pending',createdAt:r.createdAt||''}));
-      revDone=false;initRevenue();updateStats();
-    }
-  }catch(err){toast('❌ Không tải được dữ liệu');}
+// curRange đã khai báo ở trên (dòng state)
+function setRange(r,btn){curRange=r;document.querySelectorAll('.rng-btn').forEach(x=>x.classList.remove('on'));btn.classList.add('on');initRevenue();}
+function initRevenue(){
+  if(revDone)return;revDone=true;
+  updateRevStats();drawChart('week',document.querySelector('.pt2.on'));
 }
 
-function initRevenue(){
+function updateRevStats(){
+  const conf=BK.filter(b=>b.st==='confirmed');
   const now=new Date();
-  const cutoff=new Date(now.getFullYear(),now.getMonth()-(curRange-1),1);
-  const cutoffStr=cutoff.getFullYear()+'-'+String(cutoff.getMonth()+1).padStart(2,'0')+'-01';
-  const conf=BK.filter(b=>b.st==='confirmed'&&b.date>=cutoffStr);
   const todayRev=conf.filter(b=>b.date===TS).reduce((s,b)=>s+b.price,0);
   const todayCnt=conf.filter(b=>b.date===TS).length;
   const wkStart=new Date(now);wkStart.setDate(now.getDate()-now.getDay());
@@ -793,48 +1418,22 @@ function initRevenue(){
   document.getElementById('ins1').textContent=total?Math.round(conf.length/total*100)+'%':'—';
   const cc=BK.filter(b=>b.st==='cancelled').length;
   document.getElementById('ins2').textContent=total?Math.round(cc/total*100)+'%':'—';
-
-  // Tính giờ cao điểm từ data thật
   if(conf.length){
-    // Đếm theo giờ
     const hourMap={};
-    conf.forEach(b=>{
-      const h=b.time?b.time.slice(0,2):'';
-      if(h) hourMap[h]=(hourMap[h]||0)+1;
-    });
+    conf.forEach(b=>{const h=b.time?b.time.slice(0,2):'';if(h)hourMap[h]=(hourMap[h]||0)+1;});
     const peakH=Object.entries(hourMap).sort((a,b)=>b[1]-a[1])[0];
     if(peakH){
       const h=parseInt(peakH[0]);
-      const hStr=String(h).padStart(2,'0')+':00–'+String(h+1).padStart(2,'0')+':30';
-      const session=h<12?'Buổi sáng':h<14?'Buổi trưa':h<18?'Buổi chiều':'Buổi tối';
-      document.getElementById('ins-peak-val').textContent=hStr;
-      document.getElementById('ins-peak-sub').textContent=session+' · '+peakH[1]+' lịch';
-    } else {
-      document.getElementById('ins-peak-val').textContent='—';
-      document.getElementById('ins-peak-sub').textContent='Chưa đủ dữ liệu';
+      document.getElementById('ins-peak-val').textContent=String(h).padStart(2,'0')+':00–'+String(h+1).padStart(2,'0')+':30';
+      document.getElementById('ins-peak-sub').textContent=(h<12?'Buổi sáng':h<14?'Buổi trưa':h<18?'Buổi chiều':'Buổi tối')+' · '+peakH[1]+' lịch';
     }
-    // Ngày bận nhất
     const dayMap={};
-    conf.forEach(b=>{
-      const d=parseDate(b.date);
-      if(d){const dw=DAYS[d.getDay()];dayMap[dw]=(dayMap[dw]||0)+1;}
-    });
+    conf.forEach(b=>{const d=parseDate(b.date);if(d){const dw=DAYS[d.getDay()];dayMap[dw]=(dayMap[dw]||0)+1;}});
     const sorted=Object.entries(dayMap).sort((a,b)=>b[1]-a[1]);
     if(sorted.length){
-      const top=sorted.slice(0,2).map(x=>x[0]).join(' & ');
-      const isWknd=sorted[0][0]==='T7'||sorted[0][0]==='CN';
-      document.getElementById('ins-day-val').textContent=top;
-      document.getElementById('ins-day-sub').textContent=(isWknd?'Cuối tuần':'Ngày thường')+' · '+sorted[0][1]+' lịch';
-    } else {
-      document.getElementById('ins-day-val').textContent='—';
-      document.getElementById('ins-day-sub').textContent='Chưa đủ dữ liệu';
+      document.getElementById('ins-day-val').textContent=sorted.slice(0,2).map(x=>x[0]).join(' & ');
+      document.getElementById('ins-day-sub').textContent=((sorted[0][0]==='T7'||sorted[0][0]==='CN')?'Cuối tuần':'Ngày thường')+' · '+sorted[0][1]+' lịch';
     }
-  } else {
-    // Không có data
-    document.getElementById('ins-peak-val').textContent='—';
-    document.getElementById('ins-peak-sub').textContent='Chưa có lịch xác nhận';
-    document.getElementById('ins-day-val').textContent='—';
-    document.getElementById('ins-day-sub').textContent='Chưa có lịch xác nhận';
   }
   drawChart('week',document.querySelector('.pt2.on'));
   renderSvc(conf);renderCust(conf);
@@ -861,9 +1460,9 @@ function drawChart(period,btn){
     }
   }
   const mx=Math.max(...cols.map(c=>c.rev),1);
-  const _period=period;
+  const _p=period;
   document.getElementById('chart').innerHTML=cols.map(c=>`
-    <div class="bcol" onclick="showColDetail(${JSON.stringify(c).replace(/"/g,'&quot;')},'${_period}')">
+    <div class="bcol" onclick="showColDetail(${JSON.stringify(c).replace(/"/g,'&quot;')},'${_p}')">
       <div class="bamt">${c.rev>0?fmt(c.rev):''}</div>
       <div class="bfill" style="height:${Math.max(Math.round(c.rev/mx*72),2)}px;background:${c.hi?'var(--sc)':'var(--sl)'}"></div>
       <div class="blbl" style="color:${c.hi?'var(--sc)':'var(--muted)'};font-weight:${c.hi?800:600}">${c.lbl}</div>
@@ -929,33 +1528,52 @@ function go(pid,btn){
   btn.classList.add('on');
 }
 
-// BANNER SLIDESHOW (trong app)
+// Banner slideshows
 let curSlide=0;
 const TOTAL_SLIDES=3;
 function goSlide(n){
   const slides=document.querySelectorAll('.banner-slide');
   const dots=document.querySelectorAll('.banner-dot');
-  slides[curSlide].classList.remove('on');
-  dots[curSlide].classList.remove('on');
-  curSlide=n;
-  slides[curSlide].classList.add('on');
-  dots[curSlide].classList.add('on');
+  slides[curSlide].classList.remove('on');dots[curSlide].classList.remove('on');
+  curSlide=n;slides[curSlide].classList.add('on');dots[curSlide].classList.add('on');
 }
 setInterval(()=>goSlide((curSlide+1)%TOTAL_SLIDES),3500);
 
-// LOGIN SLIDESHOW (ngoài app)
-let curLoginSlide=0;
-const TOTAL_LOGIN=3;
-function goLoginSlide(n){
-  const slides=document.querySelectorAll('.ls-slide');
-  const dots=document.querySelectorAll('.ls-dot');
-  slides[curLoginSlide].classList.remove('on');
-  dots[curLoginSlide].classList.remove('on');
-  curLoginSlide=n;
-  slides[curLoginSlide].classList.add('on');
-  dots[curLoginSlide].classList.add('on');
+let curAuthSlide=0;
+const TOTAL_AUTH=3;
+function goAuthSlide(n){
+  const slides=document.querySelectorAll('.auth-slide');
+  const dots=document.querySelectorAll('.auth-dot');
+  if(!slides.length)return;
+  slides[curAuthSlide]?.classList.remove('on');
+  if(dots[curAuthSlide]){dots[curAuthSlide].style.background='rgba(255,255,255,.4)';dots[curAuthSlide].style.width='5px';}
+  curAuthSlide=n;
+  slides[curAuthSlide]?.classList.add('on');
+  if(dots[curAuthSlide]){dots[curAuthSlide].style.background='#fff';dots[curAuthSlide].style.width='16px';dots[curAuthSlide].style.borderRadius='3px';}
 }
-setInterval(()=>goLoginSlide((curLoginSlide+1)%TOTAL_LOGIN),4500);
+setInterval(()=>goAuthSlide((curAuthSlide+1)%TOTAL_AUTH),4500);
 </script>
+
+<!-- UPSELL SCREEN -->
+<div id="upsell">
+  <div class="upsell-box">
+    <div class="upsell-icon">⏰</div>
+    <div class="upsell-title" id="upsell-title">Hết thời gian dùng thử</div>
+    <div class="upsell-sub" id="upsell-sub">30 ngày dùng thử đã kết thúc. Nâng cấp để tiếp tục sử dụng BookEasy không giới hạn.</div>
+    <div class="upsell-plan">
+      <div class="upsell-plan-name">📅 BookEasy Basic</div>
+      <div class="upsell-plan-price">299.000đ <span>/ tháng</span></div>
+      <div class="upsell-features">
+        <div class="upsell-feat">Đặt lịch online không giới hạn</div>
+        <div class="upsell-feat">Dashboard quản lý realtime</div>
+        <div class="upsell-feat">Nhắc lịch tự động (SMS/Zalo)</div>
+        <div class="upsell-feat">Báo cáo doanh thu hàng tháng</div>
+        <div class="upsell-feat">Hỗ trợ kỹ thuật ưu tiên</div>
+      </div>
+    </div>
+    <button class="upsell-btn" onclick="contactUpgrade()">💬 Liên hệ nâng cấp ngay</button>
+    <button class="upsell-later" id="upsell-later-btn" onclick="document.getElementById('upsell').classList.remove('on')">Nhắc tôi sau</button>
+  </div>
+</div>
 </body>
 </html>
