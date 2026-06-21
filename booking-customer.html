@@ -622,7 +622,16 @@ async function submitBooking(){
     note:document.getElementById('cnote').value.trim()
   };
   try{
-    await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    // Lưu ý: dùng Content-Type 'text/plain' thay vì 'application/json'.
+    // Lý do: với mode 'no-cors', trình duyệt coi request có
+    // Content-Type 'application/json' là "non-simple request" và có
+    // thể tự ý loại bỏ/thay đổi header lúc gửi thật, khiến Apps Script
+    // nhận body không đúng như mong đợi (một số field bị thiếu, ví dụ
+    // serviceId). 'text/plain' luôn được coi là "simple request" nên
+    // body luôn được gửi nguyên vẹn — và Apps Script vẫn JSON.parse()
+    // được bình thường vì nó chỉ đọc nội dung text, không quan tâm
+    // Content-Type khai báo là gì.
+    await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     showSuccess(ds);
   }catch(err){
     btn.disabled=false;btn.textContent='✓ Xác nhận đặt lịch';
